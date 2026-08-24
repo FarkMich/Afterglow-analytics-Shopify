@@ -1,0 +1,2019 @@
+<title>Afterglow Funnel Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+
+<style>
+:root {
+  color-scheme: light;
+  --plane:      #f3f2ef;
+  --surface:    #fbfbf9;
+  --surface-2:  #f0efeb;
+  --ink:        #191814;
+  --ink-2:      #55534b;
+  --muted:      #86837a;
+  --hair:       #e3e0d8;
+  --hair-soft:  #edeae3;
+  --accent:     #2a78d6;
+  --accent-wash:#e8f0fc;
+
+  --s1: #2a78d6;
+  --s2: #eb6834;
+  --f1: #86b6ef;
+  --f2: #5598e7;
+  --f3: #2a78d6;
+  --f4: #184f95;
+
+  --good:     #0ca30c;
+  --warning:  #fab219;
+  --critical: #d03b3b;
+  --good-ink:     #006300;
+  --critical-ink: #a72c2c;
+  --warning-ink:  #7a5405;
+
+  --ring: rgba(25,24,20,0.10);
+  --shadow: 0 1px 2px rgba(25,24,20,0.05), 0 8px 24px -18px rgba(25,24,20,0.35);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --plane:      #100f0e;
+    --surface:    #191817;
+    --surface-2:  #211f1d;
+    --ink:        #f5f4f0;
+    --ink-2:      #b3afa4;
+    --muted:      #85827a;
+    --hair:       #2a2926;
+    --hair-soft:  #232220;
+    --accent:     #3987e5;
+    --accent-wash:#16283f;
+
+    --s1: #3987e5;
+    --s2: #d95926;
+    --f1: #cde2fb;
+    --f2: #86b6ef;
+    --f3: #3987e5;
+    --f4: #1c5cab;
+
+    --good-ink:     #0ca30c;
+    --critical-ink: #e06b6b;
+    --warning-ink:  #fab219;
+
+    --ring: rgba(245,244,240,0.11);
+    --shadow: 0 1px 2px rgba(0,0,0,0.5), 0 8px 24px -18px rgba(0,0,0,0.9);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --plane:      #100f0e;
+  --surface:    #191817;
+  --surface-2:  #211f1d;
+  --ink:        #f5f4f0;
+  --ink-2:      #b3afa4;
+  --muted:      #85827a;
+  --hair:       #2a2926;
+  --hair-soft:  #232220;
+  --accent:     #3987e5;
+  --accent-wash:#16283f;
+
+  --s1: #3987e5;
+  --s2: #d95926;
+  --f1: #cde2fb;
+  --f2: #86b6ef;
+  --f3: #3987e5;
+  --f4: #1c5cab;
+
+  --good-ink:     #0ca30c;
+  --critical-ink: #e06b6b;
+  --warning-ink:  #fab219;
+
+  --ring: rgba(245,244,240,0.11);
+  --shadow: 0 1px 2px rgba(0,0,0,0.5), 0 8px 24px -18px rgba(0,0,0,0.9);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--plane);
+  color: var(--ink);
+  font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px 96px; }
+
+.mast { padding: 40px 0 22px; border-bottom: 1px solid var(--hair); }
+.eyebrow {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 11px; font-weight: 500; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--muted); margin: 0 0 10px;
+}
+h1 {
+  font-family: "Archivo", system-ui, sans-serif;
+  font-weight: 700; font-size: clamp(30px, 4.4vw, 44px);
+  letter-spacing: -0.024em; line-height: 1.02; margin: 0 0 14px;
+  text-wrap: balance;
+}
+.mast-meta { display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; }
+.chip {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 11.5px; letter-spacing: 0.02em;
+  padding: 4px 10px; border-radius: 999px;
+  border: 1px solid var(--hair); background: var(--surface); color: var(--ink-2);
+}
+.dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+.dot.ok   { background: var(--good); }
+.dot.warn { background: var(--warning); }
+.dot.bad  { background: var(--critical); }
+
+.tabs {
+  display: flex; gap: 2px; flex-wrap: wrap;
+  border-bottom: 1px solid var(--hair);
+  position: sticky; top: 0; z-index: 20;
+  background: var(--plane);
+  margin-top: 26px;
+}
+.tab {
+  appearance: none; border: 0; background: none; cursor: pointer;
+  font-family: "Archivo", system-ui, sans-serif;
+  font-size: 14.5px; font-weight: 600; letter-spacing: -0.008em;
+  color: var(--muted); padding: 13px 15px 12px;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+  transition: color .14s ease;
+}
+.tab:hover { color: var(--ink-2); }
+.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+.tab:focus-visible { outline: 2px solid var(--accent); outline-offset: -3px; border-radius: 4px; }
+.tab .n {
+  font-family: "IBM Plex Mono", monospace; font-size: 11px;
+  color: var(--muted); margin-right: 7px; font-weight: 500;
+}
+
+.panel { display: none; padding-top: 30px; }
+.panel.on { display: block; }
+
+section { margin: 0 0 40px; }
+h2 {
+  font-family: "Archivo", system-ui, sans-serif;
+  font-size: 19px; font-weight: 600; letter-spacing: -0.012em;
+  margin: 0 0 4px;
+}
+.sub { color: var(--ink-2); font-size: 13.5px; margin: 0 0 18px; max-width: 70ch; }
+.card {
+  background: var(--surface); border: 1px solid var(--hair);
+  border-radius: 10px; padding: 20px; box-shadow: var(--shadow);
+}
+
+.tiles {
+  display: grid; gap: 10px; margin: 22px 0 0;
+  grid-template-columns: repeat(auto-fit, minmax(158px, 1fr));
+}
+.tile {
+  background: var(--surface); border: 1px solid var(--hair);
+  border-radius: 10px; padding: 14px 15px 15px; box-shadow: var(--shadow);
+}
+.tile .lab {
+  font-family: "IBM Plex Mono", monospace; font-size: 10.5px;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+  display: block; margin-bottom: 8px;
+}
+.tile .val {
+  font-family: "Archivo", system-ui, sans-serif;
+  font-size: 29px; font-weight: 600; letter-spacing: -0.028em; line-height: 1;
+}
+.tile .note { font-size: 12px; color: var(--ink-2); margin-top: 7px; display: block; }
+.tile .note b { font-weight: 600; color: var(--critical-ink); }
+.tile .note b.up { color: var(--good-ink); }
+
+.filters {
+  display: flex; flex-wrap: wrap; gap: 12px 26px; align-items: center;
+  padding: 13px 16px; margin-bottom: 16px;
+  background: var(--surface-2); border: 1px solid var(--hair); border-radius: 10px;
+}
+.fgroup { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+.fgroup > .flab {
+  font-family: "IBM Plex Mono", monospace; font-size: 10.5px;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+  margin-right: 2px;
+}
+.fnote { font-size: 12.5px; color: var(--ink-2); max-width: 60ch; }
+.opt {
+  appearance: none; cursor: pointer;
+  font-family: "IBM Plex Sans", sans-serif; font-size: 12.5px; font-weight: 500;
+  padding: 4px 11px; border-radius: 999px;
+  border: 1px solid var(--hair); background: var(--surface); color: var(--ink-2);
+  transition: background .12s ease, color .12s ease, border-color .12s ease;
+}
+.opt:hover { border-color: var(--muted); color: var(--ink); }
+.opt[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.opt:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.tw { overflow-x: auto; border: 1px solid var(--hair); border-radius: 10px; background: var(--surface); }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 580px; }
+th {
+  text-align: left; font-family: "IBM Plex Mono", monospace;
+  font-size: 10.5px; letter-spacing: 0.09em; text-transform: uppercase;
+  color: var(--muted); font-weight: 500;
+  padding: 11px 14px; border-bottom: 1px solid var(--hair); white-space: nowrap;
+  background: var(--surface); position: sticky; top: 0;
+}
+th.num, td.num { text-align: right; font-variant-numeric: tabular-nums; }
+th.sortable { cursor: pointer; user-select: none; }
+th.sortable:hover { color: var(--ink); }
+th.sortable::after { content: "  ↕"; opacity: .35; }
+th.sortable[data-dir="desc"]::after { content: "  ↓"; opacity: 1; color: var(--accent); }
+th.sortable[data-dir="asc"]::after  { content: "  ↑"; opacity: 1; color: var(--accent); }
+td { padding: 9px 14px; border-bottom: 1px solid var(--hair-soft); vertical-align: middle; }
+tbody tr:last-child td { border-bottom: 0; }
+tbody tr.clickable { cursor: pointer; }
+tbody tr.clickable:hover { background: var(--surface-2); }
+tbody tr.own td { background: var(--surface-2); }
+.cellbar { display: flex; align-items: center; gap: 9px; justify-content: flex-end; }
+.cellbar .bar { height: 8px; border-radius: 0 4px 4px 0; background: var(--s1); flex: none; }
+.cellbar .n { font-variant-numeric: tabular-nums; min-width: 46px; text-align: right; }
+.mono { font-family: "IBM Plex Mono", monospace; font-size: 12.5px; }
+.zero { color: var(--muted); }
+
+.tag {
+  display: inline-block; font-family: "IBM Plex Mono", monospace;
+  font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 4px; border: 1px solid var(--hair);
+  color: var(--ink-2); background: var(--surface-2); white-space: nowrap;
+}
+.tag.bad  { color: var(--critical-ink); border-color: var(--critical); }
+.tag.warn { color: var(--warning-ink);  border-color: var(--warning); }
+.tag.ok   { color: var(--good-ink);     border-color: var(--good); }
+
+.funnel { display: flex; flex-direction: column; }
+.stage { display: grid; grid-template-columns: 178px 1fr 248px; gap: 18px; align-items: center; padding: 15px 0; }
+.stage-name { font-weight: 600; font-size: 14px; }
+.stage-name small { display: block; font-weight: 400; color: var(--muted); font-size: 11.5px; font-family: "IBM Plex Mono", monospace; letter-spacing: 0.04em; margin-top: 2px; }
+.stage-bar { position: relative; height: 30px; background: var(--surface-2); border-radius: 5px; overflow: hidden; }
+.stage-fill { height: 100%; border-radius: 0 5px 5px 0; transition: width .35s cubic-bezier(.4,0,.2,1); }
+.stage-nums { text-align: right; font-variant-numeric: tabular-nums; }
+.stage-nums .count { font-family: "Archivo", sans-serif; font-weight: 600; font-size: 19px; letter-spacing: -0.02em; display: block; line-height: 1.15; }
+.stage-nums .pct { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--muted); letter-spacing: 0.02em; }
+.drop {
+  display: grid; grid-template-columns: 178px 1fr 248px; gap: 18px;
+  border-top: 1px dashed var(--hair); border-bottom: 1px dashed var(--hair);
+  padding: 8px 0;
+}
+.drop-txt {
+  grid-column: 2; font-family: "IBM Plex Mono", monospace; font-size: 11.5px;
+  letter-spacing: 0.04em; color: var(--critical-ink); display: flex; align-items: center; gap: 8px;
+}
+
+.chart-host { position: relative; }
+svg { display: block; width: 100%; height: auto; overflow: visible; }
+.tip {
+  position: absolute; pointer-events: none; opacity: 0;
+  transform: translate(-50%, -110%); transition: opacity .1s ease;
+  background: var(--surface); border: 1px solid var(--ring);
+  box-shadow: var(--shadow); border-radius: 8px; padding: 9px 11px;
+  font-size: 12px; min-width: 150px; z-index: 5;
+}
+.tip .th {
+  font-family: "IBM Plex Mono", monospace; font-size: 10.5px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 6px;
+}
+.tip .row { display: flex; justify-content: space-between; gap: 16px; font-variant-numeric: tabular-nums; }
+.tip .row span:last-child { font-weight: 600; }
+.legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px; }
+.legend span { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; color: var(--ink-2); }
+.swatch { width: 11px; height: 11px; border-radius: 3px; flex: none; }
+
+.callout {
+  display: grid; grid-template-columns: 22px 1fr; gap: 12px;
+  padding: 15px 17px; border-radius: 10px; margin: 16px 0;
+  background: var(--surface); border: 1px solid var(--hair);
+  border-left: 3px solid var(--muted);
+}
+.callout.crit { border-left-color: var(--critical); }
+.callout.warn { border-left-color: var(--warning); }
+.callout.info { border-left-color: var(--accent); }
+.callout.good { border-left-color: var(--good); }
+.callout .ico { font-size: 15px; line-height: 1.5; }
+.callout h3 { margin: 0 0 4px; font-size: 14px; font-family: "Archivo", sans-serif; font-weight: 600; }
+.callout p { margin: 0; font-size: 13.5px; color: var(--ink-2); max-width: 76ch; }
+.callout p + p { margin-top: 8px; }
+.callout code {
+  font-family: "IBM Plex Mono", monospace; font-size: 12px;
+  background: var(--surface-2); padding: 1px 5px; border-radius: 4px;
+}
+
+.grid2 { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+
+.foot {
+  margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--hair);
+  font-size: 12px; color: var(--muted); font-family: "IBM Plex Mono", monospace;
+  line-height: 1.7;
+}
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+@media (max-width: 620px) {
+  .stage, .drop { grid-template-columns: 1fr; gap: 7px; }
+  .drop-txt { grid-column: 1; }
+  .wrap { padding: 0 16px 72px; }
+}
+</style>
+
+<div class="wrap">
+
+  <header class="mast">
+    <p class="eyebrow">Afterglow Supplements · feelafterglow.com</p>
+    <h1>Traffic, Behaviour &amp; Funnel</h1>
+    <div class="mast-meta">
+      <span class="chip">25 Jul – 24 Aug 2026 · 30 days</span>
+      <span class="chip"><span class="dot ok"></span>Shopify Analytics · live</span>
+      <span class="chip"><span class="dot ok"></span>GA4 · read 24 Aug</span>
+      <span class="chip"><span class="dot ok"></span>Clarity · read 24 Aug</span>
+    </div>
+
+    <div class="filters" style="margin-top:20px;margin-bottom:0">
+      <div class="fgroup">
+        <span class="flab">View</span>
+        <button class="opt" data-view="clean" aria-pressed="true">Cleaned</button>
+        <button class="opt" data-view="raw" aria-pressed="false">As Shopify reports it</button>
+      </div>
+      <p class="fnote" id="view-note"></p>
+    </div>
+
+    <div class="tiles">
+      <div class="tile">
+        <span class="lab">Sessions</span>
+        <div class="val" id="k-sess">2,612</div>
+        <span class="note" id="k-sess-n">Bratislava removed</span>
+      </div>
+      <div class="tile">
+        <span class="lab">Added to cart</span>
+        <div class="val" id="k-cart">35</div>
+        <span class="note" id="k-cart-n"><b>1.34%</b> of sessions</span>
+      </div>
+      <div class="tile">
+        <span class="lab">Reached checkout</span>
+        <div class="val" id="k-chk">21</div>
+        <span class="note" id="k-chk-n">60% of carts</span>
+      </div>
+      <div class="tile">
+        <span class="lab">Tracked orders</span>
+        <div class="val" id="k-trk">4</div>
+        <span class="note" id="k-trk-n"><b>19%</b> of checkouts</span>
+      </div>
+      <div class="tile">
+        <span class="lab">Real orders</span>
+        <div class="val" id="k-ord">9</div>
+        <span class="note" id="k-ord-n">€544 · AOV <b class="up">€60.46</b></span>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Dashboard views">
+    <button class="tab" role="tab" aria-selected="true"  aria-controls="p-acq"  id="tb-acq"><span class="n">01</span>Where they come from</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="p-site" id="tb-site"><span class="n">02</span>Where they land</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="p-fun"  id="tb-fun"><span class="n">03</span>Where they drop off</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="p-beh"  id="tb-beh"><span class="n">04</span>What they do on the page</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="p-dq"   id="tb-dq"><span class="n">05</span>What to trust</button>
+  </nav>
+
+  <!-- ================= ACQUISITION ================= -->
+  <div class="panel on" id="p-acq" role="tabpanel" aria-labelledby="tb-acq">
+
+    <section>
+      <h2>What actually produced the nine orders</h2>
+      <p class="sub">Shopify records a visit trail on each order. This is the only attribution on the page that is order-level rather than session-level — and it disagrees with the session tables below.</p>
+      <div class="tw">
+        <table>
+          <thead>
+            <tr><th>Order</th><th>Date</th><th>Ship to</th><th class="num">Value</th><th>First touch</th><th>Landed on</th></tr>
+          </thead>
+          <tbody id="journeys"></tbody>
+        </table>
+      </div>
+      <div class="grid2" style="margin-top:16px">
+        <div class="callout good">
+          <span class="ico">✓</span>
+          <div>
+            <h3>Your email is the second-biggest revenue channel — and it was invisible</h3>
+            <p>#1204 and #1205 carry <code>utm_source=brevo</code>, <code>utm_medium=email</code>, campaigns <strong>Automation 24 step 2 and step 5</strong>. That is <strong>€119.40 from your Brevo flow</strong>, second only to Google's €170.73 — and the session tables report the email channel as 2 sessions and zero orders.</p>
+            <p>Both buyers are customers who came across in the store migration and were re-activated by the automation. The flow works; only the measurement was missing.</p>
+          </div>
+        </div>
+        <div class="callout crit">
+          <span class="ico">●</span>
+          <div>
+            <h3>Two orders have nothing at all, and the cause is the consent banner</h3>
+            <p>#1208 and #1210 arrived with no visit trail and, for #1210, not a single tracking attribute. Shopify only starts a tracked session once analytics consent is granted — and on the product page <strong>100 people click Decline for every 303 who click Accept</strong>, while most never touch the banner. See the <strong>What they do on the page</strong> tab for the click map.</p>
+            <p>The €119.40 of Brevo revenue was only recoverable because the UTMs survive in the cart attributes. Without them these orders would look like #1210 — money from nowhere.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Sessions per day</h2>
+      <p class="sub">Hover any day for its full funnel. Two days — 10 and 11 August — carry 1,074 sessions, 40% of the month, and produced no orders.</p>
+      <div class="card chart-host">
+        <div id="daily-chart"></div>
+        <div class="tip" id="daily-tip"></div>
+        <div class="legend">
+          <span><i class="swatch" style="background:var(--s1)"></i>Sessions</span>
+          <span><i class="swatch" style="background:var(--f4)"></i>Day with a tracked order</span>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Entry source</h2>
+      <p class="sub">Shopify's channel grouping. Click a row to carry that source into the drop-off view. "Unknown" means the referrer was stripped — in-app browsers, privacy blockers, or an untagged link.</p>
+      <div class="tw">
+        <table id="tbl-source">
+          <thead>
+            <tr>
+              <th class="sortable" data-k="k">Source</th>
+              <th class="num sortable" data-k="sessions" data-dir="desc">Sessions</th>
+              <th class="num sortable" data-k="cart">Cart adds</th>
+              <th class="num sortable" data-k="checkout">Checkouts</th>
+              <th class="num sortable" data-k="purchase">Tracked orders</th>
+              <th class="num sortable" data-k="cvr">Session → order</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Referring site</h2>
+      <p class="sub">The named referrers behind those sources, as Shopify reports them. Ten of the top twenty are sites with no plausible relationship to the store.</p>
+      <div class="filters">
+        <div class="fgroup">
+          <span class="flab">Show</span>
+          <button class="opt" data-refgrp="all" aria-pressed="true">All referrers</button>
+          <button class="opt" data-refgrp="real" aria-pressed="false">Recognised only</button>
+          <button class="opt" data-refgrp="junk" aria-pressed="false">Suspect only</button>
+        </div>
+      </div>
+      <div class="tw">
+        <table id="tbl-ref">
+          <thead>
+            <tr>
+              <th class="sortable" data-k="k">Referrer</th>
+              <th>Class</th>
+              <th class="num sortable" data-k="sessions" data-dir="desc">Sessions</th>
+              <th class="num sortable" data-k="cart">Cart adds</th>
+              <th class="num sortable" data-k="checkout">Checkouts</th>
+              <th class="num sortable" data-k="purchase">Orders</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="callout warn">
+        <span class="ico">▲</span>
+        <div>
+          <h3><code>sendibm3</code> is your own email, filed as a referral</h3>
+          <p>Those 16 sessions come from Brevo's click-tracking domain. Shopify counts only 2 sessions as "email" because the rest arrive without a UTM. Tag Brevo links with <code>utm_source=brevo&amp;utm_medium=email</code> and the email channel starts reporting itself.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Country — and whether you can ship there</h2>
+      <p class="sub">Traffic by the country the browser was in, checked against your live Shopify markets and delivery zones. Your Bratislava sessions sit on their own line. Where the <em>orders</em> went is a different table — it's on the "What to trust" tab, and it does not look like this one.</p>
+      <div class="filters">
+        <div class="fgroup">
+          <span class="flab">Show</span>
+          <button class="opt" data-cgrp="all" aria-pressed="true">All countries</button>
+          <button class="opt" data-cgrp="ships" aria-pressed="false">Markets you serve</button>
+          <button class="opt" data-cgrp="noships" aria-pressed="false">Can't ship there</button>
+        </div>
+      </div>
+      <div class="tw">
+        <table id="tbl-country">
+          <thead>
+            <tr>
+              <th class="sortable" data-k="k">Session country</th>
+              <th>Market</th>
+              <th class="num sortable" data-k="sessions" data-dir="desc">Sessions</th>
+              <th class="num sortable" data-k="cart">Cart adds</th>
+              <th class="num sortable" data-k="checkout">Checkouts</th>
+              <th class="num sortable" data-k="purchase">Tracked orders</th>
+              <th>Read</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="callout crit">
+        <span class="ico">●</span>
+        <div>
+          <h3>29% of your traffic goes to countries you don't sell to</h3>
+          <p>Your live markets are <strong>Czechia, the EU and the United States</strong>. The UK is not one of them — so those 354 UK sessions, 7 cart adds and 4 checkouts were never capable of becoming orders. Same for Canada, Australia, Switzerland, Norway, Mexico, Israel and the rest: <strong>743 sessions, 12 cart adds and 8 checkouts from people the store cannot serve.</strong></p>
+          <p>That is a third of every cart add in the month spent on customers who hit a wall. It is not a checkout problem to fix — it is an audience you are paying for and cannot fulfil. Either open the markets or stop sending traffic there.</p>
+        </div>
+      </div>
+      <div class="callout crit">
+        <span class="ico">●</span>
+        <div>
+          <h3>The US is the real anomaly now</h3>
+          <p>The US <em>is</em> an active market with Wasabi Logistics rates and a free-shipping option. It is 60% of all traffic you can actually serve — 1,104 sessions — and it produced <strong>5 cart adds and zero orders</strong>. Italy, on a twelfth of the traffic, produced 7 cart adds and 4 orders.</p>
+          <p>The breakdown says why: 496 of those US sessions arrive with no referrer at all and 115 come from ad-network frames and the unrecognised domains. Roughly <strong>600 of 1,104 US sessions look non-human</strong>. The 62 from Instagram and 95 from Linktree are the real US audience, and they are small.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ================= LANDING ================= -->
+  <div class="panel" id="p-site" role="tabpanel" aria-labelledby="tb-site">
+
+    <section>
+      <h2>Where the session starts</h2>
+      <p class="sub">Landing path with its own funnel attached. Two pages take 92% of all traffic and behave nothing like each other.</p>
+      <div class="tw">
+        <table id="tbl-land">
+          <thead>
+            <tr>
+              <th class="sortable" data-k="k">Landing path</th>
+              <th class="num sortable" data-k="sessions" data-dir="desc">Sessions</th>
+              <th class="num sortable" data-k="cart">Cart adds</th>
+              <th class="num sortable" data-k="checkout">Checkouts</th>
+              <th class="num sortable" data-k="purchase">Tracked orders</th>
+              <th class="num sortable" data-k="cvr">Session → order</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Product page first vs. homepage first</h2>
+      <p class="sub">Same store, same month. The difference is which door people walk through.</p>
+      <div class="card chart-host">
+        <div id="entry-chart"></div>
+        <div class="tip" id="entry-tip"></div>
+        <div class="legend">
+          <span><i class="swatch" style="background:var(--s1)"></i><span id="lg-pdp">Landed on the product page · 1,351 sessions</span></span>
+          <span><i class="swatch" style="background:var(--s2)"></i><span id="lg-home">Landed on the homepage · 1,074 sessions</span></span>
+        </div>
+      </div>
+      <div class="callout crit">
+        <span class="ico">●</span>
+        <div>
+          <h3>The homepage converts 4× better than the product page</h3>
+          <p>1,351 sessions land straight on <code>/products/afterglow-recovery-protocol</code> and produce 1 tracked order (0.07%). 1,074 land on <code>/</code> and produce 3 (0.28%). Every order with a recorded visit trail except one landed on the homepage.</p>
+          <p>905 of those product-page sessions arrive with one single tracking parameter: <code>?bg_ref=dZeILrKI3O</code> — a third of the entire month's traffic from one link, concentrated on 10–11 August, converting nothing. Strip that out and the product page barely has an audience of its own.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Page-to-page movement</h2>
+      <div class="callout info">
+        <span class="ico">◆</span>
+        <div>
+          <h3>Not measurable from Shopify alone</h3>
+          <p>Shopify Analytics records the <em>entry</em> page and the funnel events, but nothing in between. Which page people go to next, how far they scroll, where they rage-click, and what they do on the checkout page before abandoning it needs GA4 (path exploration) or Clarity (heatmaps and recordings). Both are now on the <strong>What they do on the page</strong> tab.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ================= FUNNEL ================= -->
+  <div class="panel" id="p-fun" role="tabpanel" aria-labelledby="tb-fun">
+
+    <section>
+      <h2>The drop-off</h2>
+      <p class="sub">Each bar is the share of the previous step that survived — the bar length is a conversion rate, not a distorted count. Absolute numbers sit on the right. Pick a source and a device to recut it.</p>
+
+      <div class="filters">
+        <div class="fgroup">
+          <span class="flab">Source</span>
+          <button class="opt" data-src="all" aria-pressed="true">All</button>
+          <button class="opt" data-src="direct" aria-pressed="false">Direct</button>
+          <button class="opt" data-src="unknown" aria-pressed="false">Unknown</button>
+          <button class="opt" data-src="social" aria-pressed="false">Social</button>
+          <button class="opt" data-src="search" aria-pressed="false">Search</button>
+          <button class="opt" data-src="paid" aria-pressed="false">Paid</button>
+          <button class="opt" data-src="email" aria-pressed="false">Email</button>
+        </div>
+        <div class="fgroup">
+          <span class="flab">Device</span>
+          <button class="opt" data-dev="all" aria-pressed="true">All</button>
+          <button class="opt" data-dev="mobile" aria-pressed="false">Mobile</button>
+          <button class="opt" data-dev="desktop" aria-pressed="false">Desktop</button>
+          <button class="opt" data-dev="tablet" aria-pressed="false">Tablet</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="funnel" id="funnel"></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Mobile vs desktop</h2>
+      <p class="sub">Step conversion by device. This is the number that changed most when your own testing came out.</p>
+      <div class="card chart-host">
+        <div id="dev-chart"></div>
+        <div class="tip" id="dev-tip"></div>
+        <div class="legend">
+          <span><i class="swatch" style="background:var(--s1)"></i><span id="lg-mob">Mobile</span></span>
+          <span><i class="swatch" style="background:var(--s2)"></i><span id="lg-desk">Desktop</span></span>
+        </div>
+      </div>
+      <div class="callout crit" id="dev-callout"></div>
+    </section>
+
+    <section>
+      <h2>People who could actually buy</h2>
+      <p class="sub">The same cleaned month, split by whether the store ships to the visitor's country. This is the split that explains most of the checkout drop.</p>
+      <div class="card chart-host">
+        <div id="ship-chart"></div>
+        <div class="tip" id="ship-tip"></div>
+        <div class="legend">
+          <span><i class="swatch" style="background:var(--s1)"></i>Markets you serve · 1,833 sessions</span>
+          <span><i class="swatch" style="background:var(--s2)"></i>Countries you can't ship to · 743 sessions</span>
+        </div>
+      </div>
+      <div class="grid2" style="margin-top:16px">
+        <div class="callout good">
+          <span class="ico">✓</span>
+          <div>
+            <h3>Checkout is not as broken as it looked</h3>
+            <p>Among people you can actually serve, checkout→order is <strong>31%</strong> (4 of 13), not the 19% the whole-store figure showed. Still under the 50–70% a healthy store sees, but a normal problem rather than an alarming one.</p>
+            <p>The 8 checkouts that came from unservable countries all failed by definition. Counting them as abandonment was measuring your own market settings.</p>
+          </div>
+        </div>
+        <div class="callout warn">
+          <span class="ico">▲</span>
+          <div>
+            <h3>The top of the funnel is where the waste is</h3>
+            <p>1,833 servable sessions produced 23 cart adds — <strong>1.25%</strong>. Take out the US bot traffic and the servable audience is closer to 1,200 real people, most of them Italian and Central European, converting at a rate the small order count can't yet measure reliably.</p>
+            <p>The month's honest summary: too little real traffic, pointed at the wrong countries, landing on the wrong page.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Reading the three drops</h2>
+      <div class="grid2" id="drops"></div>
+    </section>
+  </div>
+
+  <!-- ================= BEHAVIOUR ================= -->
+  <div class="panel" id="p-beh" role="tabpanel" aria-labelledby="tb-beh">
+
+    <section>
+      <h2>Why four orders had no session behind them</h2>
+      <p class="sub">This was the open question. Clarity's click map of the product page answers it.</p>
+      <div class="grid2">
+        <div class="card chart-host">
+          <div id="click-chart"></div>
+          <div class="tip" id="click-tip"></div>
+          <p style="margin:14px 0 0;font-size:12px;color:var(--muted);font-family:'IBM Plex Mono',monospace">
+            Most-clicked elements · product page · 2,022 taps over 1,826 views
+          </p>
+        </div>
+        <div>
+          <div class="callout crit" style="margin-top:0">
+            <span class="ico">●</span>
+            <div>
+              <h3>The cookie banner is the most-clicked thing on your product page</h3>
+              <p><strong>Accept takes 303 clicks (15% of every tap on the page) and Decline takes 100.</strong> Together the consent banner absorbs a fifth of all interaction — more than Ingredients, Benefits and everything else combined.</p>
+              <p>Shopify's analytics only start a tracked session once analytics consent is granted. 1,826 people viewed the page and only 403 touched the banner at all — so for most visitors, and for everyone who clicks Decline, <strong>Shopify never records a session</strong>. They can still browse and still buy. The order lands; the session does not.</p>
+            </div>
+          </div>
+          <div class="callout warn">
+            <span class="ico">▲</span>
+            <div>
+              <h3>One in four people who answer the banner say no</h3>
+              <p>100 Decline against 303 Accept. That alone caps how much of your funnel is ever measurable — and it is why 4 of 9 real orders arrived with no visit trail, and why Shopify counts 5 tracked orders where 9 exist.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>How far down the product page anyone gets</h2>
+      <p class="sub">Clarity scroll map, 1,826 product-page views, last 30 days. The line is the share of visitors who reached each depth.</p>
+      <div class="card chart-host">
+        <div id="scroll-chart"></div>
+        <div class="tip" id="scroll-tip"></div>
+      </div>
+      <div class="grid2" style="margin-top:16px">
+        <div class="callout crit">
+          <span class="ico">●</span>
+          <div>
+            <h3>Half your visitors never pass the first quarter of the page</h3>
+            <p>95% get to 10% of the page. By 15% only 66% remain, by 25% just 48%, and only <strong>19% reach the halfway mark</strong>. The steepest fall — a third of everyone — happens between 10% and 15% depth, right after the hero and the consent banner.</p>
+            <p>Average active time on the product page is <strong>25 seconds</strong> (GA4) and average scroll depth across the site is <strong>30.6%</strong> (Clarity). Whatever is below the fold is, for most people, not being read.</p>
+          </div>
+        </div>
+        <div class="callout warn">
+          <span class="ico">▲</span>
+          <div>
+            <h3>Nobody moves around the site</h3>
+            <p>GA4 records <strong>1.69 page views per user</strong>; Clarity records <strong>1.24 pages per session</strong>. There is essentially no browsing — people land on one page, spend 20–37 seconds, and leave. The one page that holds attention is <code>/pages/science</code> at 53 seconds, more than double the product page.</p>
+            <p>That is worth acting on: the content that keeps people is not the content they land on.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>The GA4 funnel, for comparison</h2>
+      <p class="sub">GA4's purchase journey counts <em>users</em>, not sessions, and only those who consented. Window is GA4's own last-28-days (27 Jul – 23 Aug), so it does not line up exactly with the Shopify figures.</p>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Step</th><th class="num">Users</th><th class="num">Of previous</th><th class="num">Mobile</th><th class="num">Desktop</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Session start</strong></td><td class="num">2,054</td><td class="num zero">—</td><td class="num">1,851</td><td class="num">189</td></tr>
+            <tr><td><strong>View product</strong></td><td class="num">1,250</td><td class="num">60.9%</td><td class="num">1,186</td><td class="num">64</td></tr>
+            <tr><td><strong>Add to cart</strong></td><td class="num">41</td><td class="num" style="color:var(--critical-ink);font-weight:600">3.3%</td><td class="num">30</td><td class="num">11</td></tr>
+            <tr><td><strong>Begin checkout</strong></td><td class="num">25</td><td class="num">61%</td><td class="num">15</td><td class="num">10</td></tr>
+            <tr><td><strong>Purchase</strong></td><td class="num">7</td><td class="num">28%</td><td class="num">3</td><td class="num">4</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="grid2" style="margin-top:16px">
+        <div class="callout crit">
+          <span class="ico">●</span>
+          <div>
+            <h3>1,209 people looked at the product and left</h3>
+            <p>View product → add to cart is a <strong>96.7% drop</strong>. Everything downstream — cart, checkout, payment — is arguing over the 41 people who got past it. This single step is the business problem, and the scroll map above says why: they are not reading far enough to reach a decision.</p>
+          </div>
+        </div>
+        <div class="callout good">
+          <span class="ico">✓</span>
+          <div>
+            <h3>GA4 independently confirms the bot read</h3>
+            <p>GA4 counts <strong>189 desktop users</strong> where Shopify counts 552 desktop sessions. Clarity, on the same 30 days, reports <strong>633 bot sessions excluded</strong> from its 2,942. Traffic that does not run JavaScript shows up in Shopify and nowhere else — which is exactly what the 383 "direct desktop" sessions that touch nothing look like.</p>
+            <p>Desktop's 11 add-to-carts and 4 purchases in GA4 are the same testing already identified: Clarity's top user is a Slovakian desktop with 39 sessions.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Clarity behaviour signals</h2>
+      <p class="sub">Last 30 days, 2,942 sessions after Clarity removed 633 bots.</p>
+      <div class="tiles" style="margin-top:0">
+        <div class="tile"><span class="lab">Scroll depth</span><div class="val">30.6%</div><span class="note">average, all pages</span></div>
+        <div class="tile"><span class="lab">Pages per session</span><div class="val">1.24</div><span class="note">no browsing at all</span></div>
+        <div class="tile"><span class="lab">Active time</span><div class="val">37s</div><span class="note">of 1.9 min on page</span></div>
+        <div class="tile"><span class="lab">Dead clicks</span><div class="val">9.45%</div><span class="note"><b>278 sessions</b></span></div>
+        <div class="tile"><span class="lab">Rage clicks</span><div class="val">0.10%</div><span class="note">3 sessions — not an issue</span></div>
+      </div>
+      <div class="tw" style="margin-top:16px">
+        <table>
+          <thead><tr><th>Clarity smart event</th><th class="num">Sessions</th><th>Read</th></tr></thead>
+          <tbody>
+            <tr><td>Product viewed</td><td class="num">288</td><td class="zero">Clarity's own detection — much stricter than a page view</td></tr>
+            <tr><td>Submit form</td><td class="num">74</td><td class="zero">Newsletter and contact</td></tr>
+            <tr><td>Begin checkout</td><td class="num">48</td><td class="zero">Close to Shopify's raw 43</td></tr>
+            <tr><td>Add to cart</td><td class="num">36</td><td><span class="tag ok">Matches Shopify (35) and GA4 (41)</span></td></tr>
+            <tr><td><strong>Remove from cart</strong></td><td class="num">13</td><td><span class="tag bad">36% of everyone who adds, removes</span></td></tr>
+            <tr><td>Checkout completed</td><td class="num">9</td><td class="zero">Matches Shopify's raw 9</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="grid2" style="margin-top:16px">
+        <div class="callout crit">
+          <span class="ico">●</span>
+          <div>
+            <h3>13 of 36 people who add to cart then take it out again</h3>
+            <p>That is a 36% removal rate, and it is the clearest new signal on this page. People who removed had already decided to buy something — then saw a number they did not like. Shipping cost and the total are revealed at the cart and checkout; that is where to look.</p>
+          </div>
+        </div>
+        <div class="callout warn">
+          <span class="ico">▲</span>
+          <div>
+            <h3>278 sessions with dead clicks</h3>
+            <p>Nearly one session in ten clicks something that does nothing. Rage clicks are almost zero, so this is not frustration with a broken button — more likely images, headings or badges that look tappable and are not. Worth 20 minutes in Clarity's recordings to find which element.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Two things GA4 turned up that nothing else did</h2>
+      <div class="grid2">
+        <div class="callout warn">
+          <span class="ico">▲</span>
+          <div>
+            <h3>Old WooCommerce URLs are still taking traffic</h3>
+            <p><code>/product/afterglow/</code> drew 102 views from 73 users with 40 seconds of engagement — more attention than the real product page gets. <code>/science/</code>, <code>/ankle-mobility-routine/</code> and <code>/recovery-optimization/</code> are still being hit too. These are old-site paths; either they are serving something, or people are landing on errors. Either way they should redirect to their Shopify equivalents.</p>
+          </div>
+        </div>
+        <div class="callout info">
+          <span class="ico">◆</span>
+          <div>
+            <h3>The checkout-step events are not instrumented</h3>
+            <p>GA4's checkout journey shows 32 begin-checkout users but only 3 reaching <code>add_shipping_info</code> and 1 completing — while the purchase journey shows 7 purchases over the same window. Those cannot both be behaviour. The checkout-step events are firing for only a fraction of checkouts, so GA4 <strong>cannot yet tell you where inside checkout people leave</strong>. Turning on the full Google &amp; YouTube channel checkout events would close that gap.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ================= DATA QUALITY ================= -->
+  <div class="panel" id="p-dq" role="tabpanel" aria-labelledby="tb-dq">
+
+    <section>
+      <h2>How your own testing was found and removed</h2>
+      <p class="sub">You asked whether your cart adds and checkouts were still counted. They were. Here is what they turned out to be.</p>
+      <div class="tw">
+        <table>
+          <thead>
+            <tr><th>Segment</th><th class="num">Sessions</th><th class="num">Cart adds</th><th class="num">Checkouts</th><th class="num">Tracked orders</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Whole store, as Shopify reports it</td><td class="num">2,715</td><td class="num">62</td><td class="num">43</td><td class="num">9</td></tr>
+            <tr class="own"><td><strong>Bratislava</strong> — desktop, direct</td><td class="num">70</td><td class="num">22</td><td class="num">19</td><td class="num">3</td></tr>
+            <tr class="own"><td><strong>Bratislava</strong> — everything else</td><td class="num">33</td><td class="num">5</td><td class="num">3</td><td class="num">2</td></tr>
+            <tr style="border-top:2px solid var(--hair)"><td><strong>Cleaned — Bratislava removed</strong></td><td class="num"><strong>2,612</strong></td><td class="num"><strong>35</strong></td><td class="num"><strong>21</strong></td><td class="num"><strong>4</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="grid2" style="margin-top:16px">
+        <div class="callout crit">
+          <span class="ico">●</span>
+          <div>
+            <h3>The whole desktop funnel was you</h3>
+            <p>Store-wide, direct desktop traffic showed 22 cart adds, 19 checkouts and 3 orders. Bratislava desktop direct shows <strong>exactly the same 22 / 19 / 3</strong>. Not a coincidence — it is the same sessions.</p>
+            <p>Outside Bratislava, in 473 desktop sessions across 30 days, <strong>not one added anything to a cart</strong>. My earlier read that "desktop converts 3.1× better than mobile" was your testing, and it was wrong. The real store is mobile-only.</p>
+          </div>
+        </div>
+        <div class="callout warn">
+          <span class="ico">▲</span>
+          <div>
+            <h3>What the cleaning costs, and what it can't catch</h3>
+            <p>Removing Bratislava also removes one genuine customer — order #1199 on 6 August, a real Bratislava buyer. So the cleaned funnel's last step reads 4 where 5 real tracked orders exist. The trade is worth it: keeping him would keep 27 fake cart adds with him.</p>
+            <p>City is the only handle Shopify gives — it labels the order with a customer but never the session. If you want this exact going forward, test from a browser profile you can exclude, or append <code>?test=1</code> and filter on it.</p>
+          </div>
+        </div>
+      </div>
+      <div class="callout info">
+        <span class="ico">◆</span>
+        <div>
+          <h3>The fingerprint that confirms it</h3>
+          <p>Every one of your 13 test orders records a first visit on <code>afterglow-supplements.myshopify.com</code> — the raw Shopify domain, not <code>feelafterglow.com</code> — or a referrer of <code>admin.shopify.com</code>, <code>shopify.com</code>, or <code>eventsmanager.facebook.com</code>. Real customers land on <code>feelafterglow.com</code> from Google, Instagram, Linktree or direct. No genuine order in the month touches the <code>.myshopify.com</code> domain.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>The order ledger</h2>
+      <p class="sub">Every order Shopify recorded in the window, in three classes.</p>
+      <div class="tw">
+        <table>
+          <thead>
+            <tr><th>Order</th><th>Date</th><th>Customer</th><th>Ship to</th><th class="num">Total</th><th>Class</th></tr>
+          </thead>
+          <tbody id="ledger"></tbody>
+        </table>
+      </div>
+      <div class="callout crit">
+        <span class="ico">●</span>
+        <div>
+          <h3>Two of the 24 aren't storefront orders either</h3>
+          <p>#W8337 and #W8338 were created by the <strong>Matrixify</strong> app on 29 July — bulk-imported records, most likely carried over from the old store, not sales made on this site in this window. They carry €228.01, and because they are large they were propping up the average.</p>
+          <p>So: <strong>24 orders → 13 yours → 2 imports → 9 real storefront orders, €544.17, AOV €60.46.</strong> Reported AOV was €26.26. The real one is 2.3× higher, and the real order count is barely a third of what the dashboard said.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Where the orders actually went</h2>
+      <p class="sub">This is the table that disagrees with the session-country table on tab 01, and it is the one to trust for market decisions.</p>
+      <div class="grid2">
+        <div>
+          <div class="tw">
+            <table>
+              <thead><tr><th>Ship-to country</th><th class="num">Real orders</th><th class="num">Revenue</th><th class="num">Tracked</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Italy</strong></td><td class="num">4</td><td class="num">€184.14</td><td class="num">2</td></tr>
+                <tr><td><strong>Slovakia</strong></td><td class="num">2</td><td class="num">€132.81</td><td class="num">2</td></tr>
+                <tr><td>Czechia</td><td class="num">1</td><td class="num">€107.82</td><td class="num">1</td></tr>
+                <tr><td>Germany</td><td class="num">1</td><td class="num">€49.50</td><td class="num zero">0</td></tr>
+                <tr><td>Spain</td><td class="num">1</td><td class="num">€69.90</td><td class="num zero">0</td></tr>
+                <tr style="border-top:2px solid var(--hair)"><td><strong>Total</strong></td><td class="num"><strong>9</strong></td><td class="num"><strong>€544.17</strong></td><td class="num"><strong>5</strong></td></tr>
+                <tr><td class="zero">United States</td><td class="num zero">0</td><td class="num zero">—</td><td class="num zero">0</td></tr>
+                <tr><td class="zero">United Kingdom</td><td class="num zero">0</td><td class="num zero">—</td><td class="num zero">0</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div>
+          <div class="callout info" style="margin-top:0">
+            <span class="ico">◆</span>
+            <div>
+              <h3>Why Italy shows 4 here and 2 on tab 01</h3>
+              <p>Two different questions. Tab 01 counts <strong>sessions that completed checkout, by the country the browser was in</strong> — Italy 2. This table counts <strong>orders, by where the parcel goes</strong> — Italy 4. The two Italian orders missing from the session count (#1208, #1210) have no visit trail at all, so no session could be credited.</p>
+              <p>Same story for Germany and Spain: a real order each, no tracked session behind it. Slovakia is the reverse case — it showed 6 tracked completions, but 4 were yours.</p>
+            </div>
+          </div>
+          <div class="callout crit">
+            <span class="ico">●</span>
+            <div>
+              <h3>Italy is the business right now</h3>
+              <p>Four of nine orders, and the highest cart-add rate of any real market (5.1%). It arrived through Instagram, Linktree and the <code>tripclub</code> / <code>tripclubalex</code> discount codes — creator traffic, not advertising.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Traffic that probably isn't customers</h2>
+      <div class="tw">
+        <table id="tbl-junk">
+          <thead>
+            <tr><th>Signal</th><th class="num">Sessions</th><th class="num">Orders</th><th>What it looks like</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="sub" style="margin-top:14px">These categories overlap — much of the <code>bg_ref</code> burst is also US no-referrer traffic — so they don't simply add up. The defensible floor: of 2,612 cleaned sessions, <strong>1,833 are in a market you serve</strong>, and once the US no-referrer and ad-network traffic comes out of that, the genuinely addressable audience for the month is somewhere near <strong>1,200 people</strong>.</p>
+    </section>
+
+    <section>
+      <h2>Where you actually sell</h2>
+      <p class="sub">Read live from the Shopify Admin API — your markets and delivery zones as configured today. This is what decides whether a visitor can become a customer.</p>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Market</th><th>Countries</th><th>Shipping</th></tr></thead>
+          <tbody>
+            <tr><td><strong>United States</strong></td><td class="mono">US</td><td>Wasabi Logistics — $8.50, and a free option</td></tr>
+            <tr><td><strong>Czechia</strong></td><td class="mono">CZ</td><td>Standardní — 72 CZK, and free</td></tr>
+            <tr><td><strong>European Union</strong></td><td class="mono">24 countries</td><td>€3.90 (PL, SK) · €4.60 (AT, DE, HU) · €5.80 (BE, HR, DK, LT, LU, NL, RO, SI) · €8.70 (BG, FR, IT, PT, ES, SE) · €12.50 (FI, GR, IE) — all with a free tier</td></tr>
+            <tr style="border-top:2px solid var(--hair)"><td class="zero"><strong>Everywhere else</strong></td><td class="mono zero">UK, CA, AU, CH, NO, MX, IL, …</td><td><span class="tag bad">No market · cannot check out</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout warn">
+        <span class="ico">▲</span>
+        <div>
+          <h3>One real gap: Estonia is a market with no shipping rate</h3>
+          <p>Estonia sits in the European Union market but appears in none of the five delivery zones. An Estonian customer would reach checkout and find no shipping method — a hard failure rather than a closed market. Only 3 sessions this month, so it cost nothing yet; worth adding to a zone before it does.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Sources feeding this page</h2>
+      <div class="tw">
+        <table>
+          <thead>
+            <tr><th>Source</th><th>Status</th><th>What it contributes</th><th>To unblock</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Shopify Analytics</strong><br><span class="mono zero">ShopifyQL + Admin API</span></td>
+              <td><span class="tag ok">Live</span></td>
+              <td>Everything on this page — sessions, entry source, landing page, the funnel steps, the order ledger and each order's visit trail.</td>
+              <td class="zero">—</td>
+            </tr>
+            <tr>
+              <td><strong>GA4</strong><br><span class="mono zero">property 490579883</span></td>
+              <td><span class="tag ok">Read 24 Aug</span></td>
+              <td>The purchase and checkout journeys, page engagement times, views per user, and the old-URL traffic. Window is GA4's own 27 Jul – 23 Aug.</td>
+              <td>Read manually through the browser. The Windsor.ai connector is still blocked — its free plan caps connected accounts and a leftover <strong>WooCommerce</strong> account holds the second slot. Remove it for automated pulls.</td>
+            </tr>
+            <tr>
+              <td><strong>Microsoft Clarity</strong><br><span class="mono zero">project xpfllluenp</span></td>
+              <td><span class="tag ok">Read 24 Aug</span></td>
+              <td>The product-page click and scroll maps, dead clicks, quick-backs, smart events, and its own bot exclusion.</td>
+              <td>Read manually through the browser. A Data Export API token (Clarity → Settings → Data Export) would let this refresh automatically — but note the API returns aggregated metrics only, never heatmaps or recordings.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Known quirks in the figures above</h2>
+      <div class="grid2">
+        <div class="callout info">
+          <span class="ico">◆</span>
+          <div>
+            <h3>Session totals move by grouping</h3>
+            <p>The same query returns 2,705 / 2,706 / 2,713 / 2,715 sessions depending on how it is grouped — Shopify counts a session once per dimension bucket. Everything here uses the source × device cut (2,715 raw, 2,612 cleaned) so the funnel always adds up.</p>
+          </div>
+        </div>
+        <div class="callout info">
+          <span class="ico">◆</span>
+          <div>
+            <h3>Checkouts above cart adds on two days</h3>
+            <p>13 and 14 August each show more sessions reaching checkout than adding to cart. That is buy-now / express checkout skipping the cart step, not an error — but it means "cart adds" understates intent slightly.</p>
+          </div>
+        </div>
+        <div class="callout info">
+          <span class="ico">◆</span>
+          <div>
+            <h3>Two clocks</h3>
+            <p>The Admin API reports order times in UTC; Shopify Analytics uses store-local CEST. Orders near midnight land on different days in the two systems. The ledger dates here are store-local, matching the charts.</p>
+          </div>
+        </div>
+        <div class="callout info">
+          <span class="ico">◆</span>
+          <div>
+            <h3>Password-page and preview sessions counted</h3>
+            <p>41 sessions landed on <code>/password</code> and a handful on <code>shopifypreview.com</code> — your own theme previews. Small, and mostly outside Bratislava, so the cleaning does not catch them.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <p class="foot">
+    Built 24 Aug 2026 · window 25 Jul – 24 Aug 2026 · currency EUR · store timezone CEST<br>
+    Figures pulled live from Shopify Analytics (ShopifyQL) and the Shopify Admin API. GA4 read 27 Jul – 23 Aug; Clarity read last-30-days. Windows differ slightly from the Shopify figures.
+  </p>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ================= data ================= */
+
+  // src, dev, [sessions, cart, checkout, purchase] raw, then cleaned (Bratislava removed)
+  var CUBE = [
+    { src:"direct",  dev:"mobile",  raw:[821,14,10,1], cl:[803,10,8,0] },
+    { src:"unknown", dev:"mobile",  raw:[718,10,4,1],  cl:[716,10,4,1] },
+    { src:"social",  dev:"mobile",  raw:[515,9,5,1],   cl:[513,9,5,1] },
+    { src:"direct",  dev:"desktop", raw:[453,22,19,3], cl:[383,0,0,0] },
+    { src:"search",  dev:"mobile",  raw:[82,6,4,2],    cl:[80,6,4,2] },
+    { src:"search",  dev:"desktop", raw:[72,0,0,0],    cl:[72,0,0,0] },
+    { src:"unknown", dev:"desktop", raw:[14,0,0,0],    cl:[7,0,0,0] },
+    { src:"paid",    dev:"mobile",  raw:[13,0,0,0],    cl:[13,0,0,0] },
+    { src:"social",  dev:"desktop", raw:[12,1,1,1],    cl:[10,0,0,0] },
+    { src:"unknown", dev:"tablet",  raw:[11,0,0,0],    cl:[11,0,0,0] },
+    { src:"email",   dev:"mobile",  raw:[2,0,0,0],     cl:[2,0,0,0] },
+    { src:"social",  dev:"other",   raw:[1,0,0,0],     cl:[1,0,0,0] },
+    { src:"paid",    dev:"desktop", raw:[1,0,0,0],     cl:[1,0,0,0] }
+  ];
+
+  var SRC_LABEL = {
+    direct:"Direct / typed-in", unknown:"Unknown (referrer stripped)", social:"Social",
+    search:"Organic search", paid:"Paid", email:"Email"
+  };
+
+  // date, sessions, cart, checkout, tracked orders (raw), tracked orders (cleaned)
+  var DAILY = [
+    ["2026-07-25",6,0,0,0,0],   ["2026-07-26",6,0,0,0,0],   ["2026-07-27",4,0,0,0,0],
+    ["2026-07-28",3,0,0,0,0],   ["2026-07-29",1,0,0,0,0],   ["2026-07-30",9,1,1,0,0],
+    ["2026-07-31",13,0,0,0,0],  ["2026-08-01",0,0,0,0,0],   ["2026-08-02",10,0,0,0,0],
+    ["2026-08-03",22,0,0,0,0],  ["2026-08-04",24,3,2,1,0],  ["2026-08-05",31,7,6,0,0],
+    ["2026-08-06",56,7,3,1,0],  ["2026-08-07",48,2,2,0,0],  ["2026-08-08",35,1,1,1,1],
+    ["2026-08-09",29,0,0,0,0],  ["2026-08-10",437,3,3,0,0], ["2026-08-11",637,10,3,0,0],
+    ["2026-08-12",130,4,2,0,0], ["2026-08-13",76,2,3,0,0],  ["2026-08-14",84,3,4,2,0],
+    ["2026-08-15",40,0,0,0,0],  ["2026-08-16",53,0,0,0,0],  ["2026-08-17",125,1,1,1,1],
+    ["2026-08-18",76,3,2,0,0],  ["2026-08-19",120,0,0,0,0], ["2026-08-20",247,6,4,0,0],
+    ["2026-08-21",163,4,2,2,2], ["2026-08-22",68,2,2,1,0],  ["2026-08-23",78,1,1,0,0],
+    ["2026-08-24",82,2,1,0,0]
+  ];
+
+  // name, date (CEST), customer, ship-to, total, class: real | own | import
+  var ORDERS = [
+    ["#W8337","25 Jul","Migrated customer A","NL",114.01,"import"],
+    ["#W8338","26 Jul","Migrated customer B","PT",114.00,"import"],
+    ["#1189","29 Jul","Store owner (test)","CZ",0.00,"own"],
+    ["#1190","30 Jul","Store owner (test)","SK",3.90,"own"],
+    ["#1191","30 Jul","Store owner (test)","SK",3.50,"own"],
+    ["#1192","3 Aug","Store owner (test)","SK",0.00,"own"],
+    ["#1193","3 Aug","Store owner (test)","SK",0.00,"own"],
+    ["#1194","3 Aug","Store owner (test)","SK",0.00,"own"],
+    ["#1195","4 Aug","Store owner (test)","SK",0.00,"own"],
+    ["#1196","4 Aug","Store owner (test)","SK",0.00,"own"],
+    ["#1197","4 Aug","Store owner (test)","SK",0.00,"own"],
+    ["#1198","4 Aug","Store owner (test)","SK",1.00,"own"],
+    ["#1199","6 Aug","Customer · SK","SK",69.90,"real"],
+    ["#1200","8 Aug","Customer · SK","SK",62.91,"real"],
+    ["#1201","14 Aug","Store owner (test)","SK",2.25,"own"],
+    ["#1202","14 Aug","Store owner (test)","SK",0.00,"own"],
+    ["#1203","17 Aug","Customer · CZ","CZ",107.82,"real"],
+    ["#1204","18 Aug","Customer · DE","DE",49.50,"real"],
+    ["#1205","20 Aug","Customer · ES","ES",69.90,"real"],
+    ["#1206","21 Aug","Customer · IT","IT",40.41,"real"],
+    ["#1207","21 Aug","Customer · IT","IT",40.41,"real"],
+    ["#1208","21 Aug","Customer · IT","IT",62.91,"real"],
+    ["#1209","22 Aug","Store owner (test)","SK",0.00,"own"],
+    ["#1210","22 Aug","Customer · IT","IT",40.41,"real"]
+  ];
+
+  var CLASS_LABEL = {
+    real:   ["ok",   "Real order"],
+    own:    ["bad",  "Your test"],
+    import: ["warn", "Matrixify import"]
+  };
+
+  // the nine real orders and their recorded visit trail
+  var JOURNEYS = [
+    ["#1199","6 Aug","SK",69.90,"Direct","feelafterglow.com/","ok"],
+    ["#1200","8 Aug","SK",62.91,"Google","feelafterglow.com/","ok"],
+    ["#1203","17 Aug","CZ",107.82,"Google","feelafterglow.com/","ok"],
+    ["#1204","18 Aug","DE",49.50,"Brevo email","Automation 24 · step 2","utm"],
+    ["#1205","20 Aug","ES",69.90,"Brevo email","Automation 24 · step 5","utm"],
+    ["#1206","21 Aug","IT",40.41,"Instagram","link in bio → homepage","ok"],
+    ["#1207","21 Aug","IT",40.41,"Linktree","/products/afterglow-recovery-protocol","ok"],
+    ["#1208","21 Aug","IT",62.91,"—","no consent, no session","none"],
+    ["#1210","22 Aug","IT",40.41,"—","no tracking captured at all","none"]
+  ];
+
+  var REFERRERS = [
+    ["Direct / no referrer", "direct", 1274, 36, 29, 4],
+    ["instagram",            "known",  404,  7,  4,  1],
+    ["linktr (Linktree)",    "known",  362,  10, 4,  1],
+    ["google",               "known",  158,  6,  4,  2],
+    ["facebook",             "known",  81,   3,  2,  1],
+    ["syndicatedsearch",     "adnet",  58,   0,  0,  0],
+    ["googlesyndication",    "adnet",  33,   0,  0,  0],
+    ["youtube",              "known",  24,   0,  0,  0],
+    ["zocreations",          "junk",   22,   0,  0,  0],
+    ["tiktok",               "known",  17,   0,  0,  0],
+    ["tipake",               "junk",   17,   0,  0,  0],
+    ["diabeteswellbeing",    "junk",   16,   0,  0,  0],
+    ["sendibm3 (Brevo)",     "known",  16,   0,  0,  0],
+    ["healthcaresfactual",   "junk",   15,   0,  0,  0],
+    ["termo",                "junk",   15,   0,  0,  0],
+    ["bing",                 "known",  10,   0,  0,  0],
+    ["thedayafterprotocol",  "junk",   9,    0,  0,  0],
+    ["hipmis",               "junk",   9,    0,  0,  0],
+    ["no1cfw",               "junk",   7,    0,  0,  0],
+    ["thunderbootlegacy",    "junk",   7,    0,  0,  0]
+  ];
+
+  var REF_TAG = {
+    direct: ["", "Direct"], known: ["ok", "Recognised"],
+    adnet: ["warn", "Ad network"], junk: ["bad", "Unrecognised"]
+  };
+
+  // session country — cleaned figures (Bratislava excluded); Bratislava on its own line
+  // name, sessions, cart, checkout, tracked orders, isOwnTesting, realOrdersShipped, shipsThere
+  var COUNTRIES = [
+    ["United States",  1104, 5, 2, 0, false, 0, true],
+    ["United Kingdom",  354, 7, 4, 0, false, 0, false],
+    ["Italy",           137, 7, 5, 2, false, 4, true],
+    ["Germany",         114, 2, 1, 0, false, 1, true],
+    ["Spain",           110, 1, 0, 0, false, 1, true],
+    ["Bratislava, SK",  103, 27, 22, 5, true,  1, true],
+    ["Canada",           76, 1, 1, 0, false, 0, false],
+    ["Portugal",         60, 1, 0, 0, false, 0, true],
+    ["Belgium",          59, 1, 0, 0, false, 0, true],
+    ["Netherlands",      59, 1, 0, 0, false, 0, true],
+    ["Australia",        55, 2, 0, 0, false, 0, false],
+    ["Czechia",          39, 2, 3, 1, false, 1, true],
+    ["India",            36, 0, 0, 0, false, 0, false],
+    ["Singapore",        30, 0, 0, 0, false, 0, false],
+    ["China",            27, 0, 0, 0, false, 0, false],
+    ["Switzerland",      24, 0, 0, 0, false, 0, false],
+    ["Romania",          22, 0, 0, 0, false, 0, true],
+    ["Norway",           22, 0, 0, 0, false, 0, false],
+    ["France",           20, 0, 0, 0, false, 0, true],
+    ["Sweden",           18, 0, 0, 0, false, 0, true],
+    ["Slovakia, rest",   16, 3, 2, 1, false, 1, true],
+    ["Ireland",          16, 0, 0, 0, false, 0, true],
+    ["South Africa",     14, 0, 0, 0, false, 0, false],
+    ["New Zealand",      13, 0, 0, 0, false, 0, false],
+    ["Austria",          11, 0, 0, 0, false, 0, true],
+    ["Mexico",           10, 1, 1, 0, false, 0, false],
+    ["United Arab Em.",   8, 0, 1, 0, false, 0, false],
+    ["Israel",            7, 1, 1, 0, false, 0, false]
+  ];
+
+  // whole-window rollups by whether the store can ship there (cleaned view, all 50 countries)
+  var SHIPPABLE   = { sessions: 1833, cart: 23, checkout: 13, purchase: 4 };
+  var UNSHIPPABLE = { sessions: 743,  cart: 12, checkout: 8,  purchase: 0 };
+
+  // path, raw funnel, cleaned funnel
+  var LANDING = [
+    ["/products/afterglow-recovery-protocol", [1328,23,11,1], [1316,19,8,1]],
+    ["/",                                     [1149,35,25,8], [1074,14,8,3]],
+    ["/pages/science",                        [49,2,1,0],     [48,1,0,0]],
+    ["/password",                             [41,0,0,0],     [40,0,0,0]],
+    ["/products/afterglow-recovery-protocol/",[35,1,1,0],     [35,1,1,0]],
+    ["/ankle-mobility-routine/",              [16,0,0,0],     [16,0,0,0]],
+    ["/pages/contact",                        [15,0,0,0],     [14,0,0,0]],
+    ["/pages/our-standards",                  [7,0,0,0],      [6,0,0,0]],
+    ["/policies/privacy-policy",              [7,0,0,0],      [7,0,0,0]],
+    ["/cart",                                 [6,0,0,0],      [6,0,0,0]],
+    ["/policies/shipping-policy",             [5,0,0,0],      [5,0,0,0]],
+    ["/policies/refund-policy",               [4,0,0,0],      [4,0,0,0]],
+    ["/2026/03/12/",                          [4,0,0,0],      [4,0,0,0]],
+    ["/recovery-optimization/",               [3,0,0,0],      [3,0,0,0]],
+    ["/pages/data-sharing-opt-out",           [3,0,0,0],      [3,0,0,0]]
+  ];
+
+  var JUNK_ROWS = [
+    ["<code>?bg_ref=dZeILrKI3O</code> on the product page", 905, 0,
+     "One tracking link, a third of the month's traffic, landing on 10–11 Aug. No orders."],
+    ["Unrecognised referring sites (10 domains)", 117, 0,
+     "zocreations, tipake, diabeteswellbeing, healthcaresfactual, termo, hipmis, no1cfw, thunderbootlegacy, thedayafterprotocol and one more. Referral-spam signature."],
+    ["Ad-network frames (syndicatedsearch, googlesyndication)", 91, 0,
+     "Display-network placements or click-fraud traffic. Zero engagement of any kind."],
+    ["Countries with no market", 743, 0,
+     "UK, Canada, Australia, Switzerland, Norway, Mexico, Israel and others. Carried 12 cart adds and 8 checkouts that could never complete."],
+    ["Your own testing (Bratislava)", 103, 4,
+     "Removed in the cleaned view. Carried 27 cart adds and 22 checkouts — 44% and 51% of the store's totals."],
+    ["Own password page and theme previews", 52, 0,
+     "Your sessions, counted as visitors. Mostly outside Bratislava, so still in the cleaned figures."]
+  ];
+
+  /* ================= helpers ================= */
+
+  var fmt = function (n) { return n.toLocaleString("en-US"); };
+  var pct = function (a, b, d) { return b ? (a / b * 100).toFixed(d === undefined ? 1 : d) + "%" : "—"; };
+  var el = function (tag, cls, html) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (html !== undefined) e.innerHTML = html;
+    return e;
+  };
+  var cssv = function (n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); };
+  var SVGNS = "http://www.w3.org/2000/svg";
+  var mk = function (tag, attrs) {
+    var n = document.createElementNS(SVGNS, tag);
+    for (var k in attrs) n.setAttribute(k, attrs[k]);
+    return n;
+  };
+
+  var view = "clean";
+  var isClean = function () { return view === "clean"; };
+
+  /* ================= tabs ================= */
+
+  var tabs = [].slice.call(document.querySelectorAll(".tab"));
+  tabs.forEach(function (t) {
+    t.addEventListener("click", function () {
+      tabs.forEach(function (o) {
+        var on = o === t;
+        o.setAttribute("aria-selected", on ? "true" : "false");
+        document.getElementById(o.getAttribute("aria-controls")).classList.toggle("on", on);
+      });
+      render();
+    });
+  });
+
+  /* ================= sortable tables ================= */
+
+  function makeTable(id, rows, renderRow, defaultKey) {
+    var table = document.getElementById(id);
+    var tbody = table.querySelector("tbody");
+    var state = { key: defaultKey, dir: "desc" };
+
+    function paint() {
+      var data = rows.slice().sort(function (a, b) {
+        var x = a[state.key], y = b[state.key];
+        if (typeof x === "string") return state.dir === "asc" ? x.localeCompare(y) : y.localeCompare(x);
+        return state.dir === "asc" ? x - y : y - x;
+      });
+      tbody.innerHTML = "";
+      data.forEach(function (r, i) { tbody.appendChild(renderRow(r, i, data)); });
+    }
+
+    [].slice.call(table.querySelectorAll("th.sortable")).forEach(function (th) {
+      th.setAttribute("tabindex", "0");
+      var go = function () {
+        var k = th.dataset.k;
+        state.dir = (state.key === k && state.dir === "desc") ? "asc" : "desc";
+        state.key = k;
+        [].slice.call(table.querySelectorAll("th.sortable")).forEach(function (o) { delete o.dataset.dir; });
+        th.dataset.dir = state.dir;
+        paint();
+      };
+      th.addEventListener("click", go);
+      th.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); }
+      });
+    });
+
+    paint();
+    return { repaint: paint };
+  }
+
+  function barCell(value, max) {
+    var td = el("td", "num");
+    var w = max ? Math.max(value > 0 ? 3 : 0, value / max * 92) : 0;
+    td.innerHTML = '<span class="cellbar"><span class="n">' + fmt(value) + '</span>' +
+      '<span class="bar" style="width:' + w + 'px"></span></span>';
+    return td;
+  }
+
+  function numCell(v, extra) {
+    return el("td", "num" + (v ? "" : " zero"), fmt(v) + (extra || ""));
+  }
+
+  /* ================= view toggle ================= */
+
+  var VIEW_NOTE = {
+    clean: "Your 103 Bratislava sessions, your 13 test orders and 2 Matrixify imports are out. This is the store as an outside customer experiences it.",
+    raw:   "Everything Shopify reports, including your own testing and the imported orders. Useful for reconciling against the Shopify admin, misleading for decisions."
+  };
+
+  [].slice.call(document.querySelectorAll(".opt[data-view]")).forEach(function (b) {
+    b.addEventListener("click", function () {
+      view = b.dataset.view;
+      [].slice.call(document.querySelectorAll(".opt[data-view]")).forEach(function (o) {
+        o.setAttribute("aria-pressed", o === b ? "true" : "false");
+      });
+      render();
+    });
+  });
+
+  function paintKpis() {
+    var t = agg("all", "all");
+    document.getElementById("view-note").textContent = VIEW_NOTE[view];
+    document.getElementById("k-sess").textContent = fmt(t.sessions);
+    document.getElementById("k-sess-n").textContent = isClean() ? "Bratislava removed" : "40% of them on two days";
+    document.getElementById("k-cart").textContent = t.cart;
+    document.getElementById("k-cart-n").innerHTML = "<b>" + pct(t.cart, t.sessions, 2) + "</b> of sessions";
+    document.getElementById("k-chk").textContent = t.checkout;
+    document.getElementById("k-chk-n").textContent = pct(t.checkout, t.cart) + " of carts";
+    document.getElementById("k-trk").textContent = t.purchase;
+    document.getElementById("k-trk-n").innerHTML = "<b>" + pct(t.purchase, t.checkout) + "</b> of checkouts";
+    document.getElementById("k-ord").textContent = isClean() ? "9" : "24";
+    document.getElementById("k-ord-n").innerHTML = isClean()
+      ? '€544 · AOV <b class="up">€60.46</b>'
+      : '€775 · AOV <b>€26.26</b>';
+  }
+
+  /* ================= aggregation ================= */
+
+  function agg(srcF, devF) {
+    var t = { sessions: 0, cart: 0, checkout: 0, purchase: 0 };
+    CUBE.forEach(function (r) {
+      if (srcF !== "all" && r.src !== srcF) return;
+      if (devF !== "all" && r.dev !== devF) return;
+      var v = isClean() ? r.cl : r.raw;
+      t.sessions += v[0]; t.cart += v[1]; t.checkout += v[2]; t.purchase += v[3];
+    });
+    return t;
+  }
+
+  function deviceTotals(dev) { return agg("all", dev); }
+
+  /* ================= source table ================= */
+
+  var srcRows = ["direct", "unknown", "social", "search", "paid", "email"].map(function (k) {
+    var o = { k: k };
+    Object.defineProperty(o, "_t", { get: function () { return agg(k, "all"); } });
+    ["sessions", "cart", "checkout", "purchase"].forEach(function (m) {
+      Object.defineProperty(o, m, { get: function () { return o._t[m]; } });
+    });
+    Object.defineProperty(o, "cvr", { get: function () { return o.purchase / o.sessions * 100; } });
+    return o;
+  });
+
+  var srcTable = makeTable("tbl-source", srcRows, function (r) {
+    var max = Math.max.apply(null, srcRows.map(function (x) { return x.sessions; }));
+    var tr = el("tr", "clickable");
+    tr.appendChild(el("td", "", "<strong>" + SRC_LABEL[r.k] + "</strong>"));
+    tr.appendChild(barCell(r.sessions, max));
+    tr.appendChild(numCell(r.cart, r.cart ? ' <span class="mono zero">· ' + pct(r.cart, r.sessions, 2) + "</span>" : ""));
+    tr.appendChild(numCell(r.checkout));
+    tr.appendChild(numCell(r.purchase));
+    tr.appendChild(el("td", "num" + (r.purchase ? "" : " zero"), r.cvr.toFixed(2) + "%"));
+    tr.addEventListener("click", function () {
+      setFilter("src", r.k);
+      document.getElementById("tb-fun").click();
+      document.getElementById("p-fun").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    return tr;
+  }, "sessions");
+
+  /* ================= referrer table ================= */
+
+  var refRows = REFERRERS.map(function (r) {
+    return { k: r[0], cls: r[1], sessions: r[2], cart: r[3], checkout: r[4], purchase: r[5] };
+  });
+  var refMax = 1274;
+  var refFilter = "all";
+
+  var refTable = makeTable("tbl-ref", refRows, function (r) {
+    var tr = el("tr");
+    var junk = (r.cls === "junk" || r.cls === "adnet");
+    if (refFilter === "real" && junk) tr.style.display = "none";
+    if (refFilter === "junk" && !junk) tr.style.display = "none";
+    tr.appendChild(el("td", "", "<strong>" + r.k + "</strong>"));
+    var tag = REF_TAG[r.cls];
+    tr.appendChild(el("td", "", '<span class="tag ' + tag[0] + '">' + tag[1] + "</span>"));
+    tr.appendChild(barCell(r.sessions, refMax));
+    tr.appendChild(numCell(r.cart));
+    tr.appendChild(numCell(r.checkout));
+    tr.appendChild(numCell(r.purchase));
+    return tr;
+  }, "sessions");
+
+  [].slice.call(document.querySelectorAll("[data-refgrp]")).forEach(function (b) {
+    b.addEventListener("click", function () {
+      refFilter = b.dataset.refgrp;
+      [].slice.call(document.querySelectorAll("[data-refgrp]")).forEach(function (o) {
+        o.setAttribute("aria-pressed", o === b ? "true" : "false");
+      });
+      refTable.repaint();
+    });
+  });
+
+  /* ================= country table ================= */
+
+  var cRows = COUNTRIES.map(function (r) {
+    return { k: r[0], sessions: r[1], cart: r[2], checkout: r[3], purchase: r[4],
+             own: r[5], real: r[6], ships: r[7] };
+  });
+  var cMax = 1104;
+  var cFilter = "all";
+
+  var countryTable = makeTable("tbl-country", cRows, function (r) {
+    var tr = el("tr", r.own ? "own" : "");
+    if (cFilter === "ships" && !r.ships) tr.style.display = "none";
+    if (cFilter === "noships" && r.ships) tr.style.display = "none";
+    tr.appendChild(el("td", "", "<strong>" + r.k + "</strong>" +
+      (r.own ? ' <span class="tag bad">Your testing</span>' : "")));
+    tr.appendChild(el("td", "", r.ships
+      ? '<span class="tag ok">Ships</span>'
+      : '<span class="tag bad">No market</span>'));
+    tr.appendChild(barCell(r.sessions, cMax));
+    tr.appendChild(numCell(r.cart));
+    tr.appendChild(numCell(r.checkout));
+    tr.appendChild(numCell(r.purchase, r.real > r.purchase && !r.own
+      ? ' <span class="mono zero">· ' + r.real + " shipped</span>" : ""));
+    var read;
+    if (r.own) read = '<span class="tag bad">Excluded when cleaned</span>';
+    else if (!r.ships && r.checkout > 0) read = '<span class="tag bad">Tried to buy, blocked</span>';
+    else if (!r.ships && r.cart > 0) read = '<span class="tag warn">Carted, can\'t be served</span>';
+    else if (!r.ships) read = '<span class="tag">Unservable traffic</span>';
+    else if (r.purchase > 0) read = '<span class="tag ok">Buys · ' + r.real + " order" + (r.real === 1 ? "" : "s") + "</span>";
+    else if (r.real > 0) read = '<span class="tag ok">Buys, but untracked</span>';
+    else if (r.checkout > 0) read = '<span class="tag bad">Reaches checkout, never pays</span>';
+    else if (r.cart > 0) read = '<span class="tag warn">Carts, no checkout</span>';
+    else read = '<span class="tag">No engagement</span>';
+    tr.appendChild(el("td", "", read));
+    return tr;
+  }, "sessions");
+
+  [].slice.call(document.querySelectorAll("[data-cgrp]")).forEach(function (b) {
+    b.addEventListener("click", function () {
+      cFilter = b.dataset.cgrp;
+      [].slice.call(document.querySelectorAll("[data-cgrp]")).forEach(function (o) {
+        o.setAttribute("aria-pressed", o === b ? "true" : "false");
+      });
+      countryTable.repaint();
+    });
+  });
+
+  /* ================= landing table ================= */
+
+  var lRows = LANDING.map(function (r) {
+    var o = { k: r[0], raw: r[1], cl: r[2] };
+    Object.defineProperty(o, "_v", { get: function () { return isClean() ? o.cl : o.raw; } });
+    ["sessions", "cart", "checkout", "purchase"].forEach(function (m, i) {
+      Object.defineProperty(o, m, { get: function () { return o._v[i]; } });
+    });
+    Object.defineProperty(o, "cvr", { get: function () { return o.purchase / o.sessions * 100; } });
+    return o;
+  });
+
+  var landTable = makeTable("tbl-land", lRows, function (r) {
+    var max = Math.max.apply(null, lRows.map(function (x) { return x.sessions; }));
+    var tr = el("tr");
+    tr.appendChild(el("td", "", '<span class="mono">' + r.k + "</span>"));
+    tr.appendChild(barCell(r.sessions, max));
+    tr.appendChild(numCell(r.cart));
+    tr.appendChild(numCell(r.checkout));
+    tr.appendChild(numCell(r.purchase));
+    tr.appendChild(el("td", "num" + (r.purchase ? "" : " zero"), r.cvr.toFixed(2) + "%"));
+    return tr;
+  }, "sessions");
+
+  /* ================= static tables ================= */
+
+  (function () {
+    var tb = document.getElementById("journeys");
+    JOURNEYS.forEach(function (j) {
+      var tr = el("tr");
+      tr.appendChild(el("td", "", '<span class="mono">' + j[0] + "</span>"));
+      tr.appendChild(el("td", "mono", j[1]));
+      tr.appendChild(el("td", "mono", j[2]));
+      tr.appendChild(el("td", "num", "€" + j[3].toFixed(2)));
+      tr.appendChild(el("td", "", j[6] === "none"
+        ? '<span class="tag bad">Untracked</span>'
+        : '<span class="tag ' + (j[6] === "utm" ? "warn" : "ok") + '">' + j[4] + "</span>"));
+      tr.appendChild(el("td", "mono" + (j[6] === "none" ? " zero" : ""), j[5]));
+      tb.appendChild(tr);
+    });
+    var tot = el("tr");
+    tot.style.cssText = "border-top:2px solid var(--hair);font-weight:600";
+    tot.innerHTML = '<td colspan="3"><strong>9 real storefront orders</strong></td>' +
+      '<td class="num"><strong>€544.17</strong></td>' +
+      '<td colspan="2" class="mono zero">7 attributable · 2 with nothing at all</td>';
+    tb.appendChild(tot);
+  })();
+
+  (function () {
+    var tb = document.getElementById("ledger");
+    ORDERS.forEach(function (o) {
+      var tr = el("tr", o[5] === "real" ? "" : "own");
+      tr.appendChild(el("td", "", '<span class="mono">' + o[0] + "</span>"));
+      tr.appendChild(el("td", "mono", o[1]));
+      tr.appendChild(el("td", "", o[2]));
+      tr.appendChild(el("td", "mono", o[3]));
+      tr.appendChild(el("td", "num" + (o[4] ? "" : " zero"), "€" + o[4].toFixed(2)));
+      var c = CLASS_LABEL[o[5]];
+      tr.appendChild(el("td", "", '<span class="tag ' + c[0] + '">' + c[1] + "</span>"));
+      tb.appendChild(tr);
+    });
+    var tot = el("tr");
+    tot.style.cssText = "border-top:2px solid var(--hair);font-weight:600";
+    tot.innerHTML = '<td colspan="4"><strong>9 real</strong> · 13 yours · 2 imported</td>' +
+      '<td class="num"><strong>€544.17</strong></td><td class="mono zero">AOV €60.46</td>';
+    tb.appendChild(tot);
+  })();
+
+  (function () {
+    var tb = document.querySelector("#tbl-junk tbody");
+    JUNK_ROWS.forEach(function (r) {
+      var tr = el("tr");
+      tr.appendChild(el("td", "", r[0]));
+      tr.appendChild(el("td", "num", fmt(r[1])));
+      tr.appendChild(el("td", "num" + (r[2] ? "" : " zero"), fmt(r[2])));
+      tr.appendChild(el("td", "", '<span style="color:var(--ink-2)">' + r[3] + "</span>"));
+      tb.appendChild(tr);
+    });
+  })();
+
+  /* ================= funnel ================= */
+
+  var filter = { src: "all", dev: "all" };
+
+  function setFilter(dim, val) {
+    filter[dim] = val;
+    [].slice.call(document.querySelectorAll(".opt[data-" + dim + "]")).forEach(function (b) {
+      b.setAttribute("aria-pressed", b.dataset[dim] === val ? "true" : "false");
+    });
+    drawFunnel();
+  }
+
+  ["src", "dev"].forEach(function (dim) {
+    [].slice.call(document.querySelectorAll(".opt[data-" + dim + "]")).forEach(function (b) {
+      b.addEventListener("click", function () { setFilter(dim, b.dataset[dim]); });
+    });
+  });
+
+  function drawFunnel() {
+    var t = agg(filter.src, filter.dev);
+    var stages = [
+      { name: "Sessions",         note: "landed on the store", v: t.sessions, prev: t.sessions, color: "--f1" },
+      { name: "Added to cart",    note: "add_to_cart",         v: t.cart,     prev: t.sessions, color: "--f2" },
+      { name: "Reached checkout", note: "begin_checkout",      v: t.checkout, prev: t.cart,     color: "--f3" },
+      { name: "Completed order",  note: "purchase",            v: t.purchase, prev: t.checkout, color: "--f4" }
+    ];
+    var host = document.getElementById("funnel");
+    host.innerHTML = "";
+
+    if (t.sessions === 0) {
+      host.appendChild(el("p", "sub", "No sessions in this segment."));
+      return;
+    }
+
+    stages.forEach(function (s, i) {
+      var rate = s.prev ? s.v / s.prev : 0;
+      var row = el("div", "stage");
+      row.appendChild(el("div", "stage-name", s.name + "<small>" + s.note + "</small>"));
+      var barWrap = el("div", "stage-bar");
+      var fill = el("div", "stage-fill");
+      fill.style.width = (i === 0 ? 100 : Math.max(rate * 100, s.v > 0 ? 1.5 : 0)) + "%";
+      fill.style.background = "var(" + s.color + ")";
+      barWrap.appendChild(fill);
+      row.appendChild(barWrap);
+      row.appendChild(el("div", "stage-nums",
+        '<span class="count">' + fmt(s.v) + "</span>" +
+        '<span class="pct">' + (i === 0 ? "100% of this segment"
+          : pct(s.v, s.prev) + " of previous · " + pct(s.v, t.sessions, 2) + " of sessions") + "</span>"));
+      host.appendChild(row);
+
+      if (i < stages.length - 1) {
+        var lost = s.v - stages[i + 1].v;
+        var d = el("div", "drop");
+        d.appendChild(el("div", "drop-txt",
+          '<span>↓</span>' + fmt(lost) + " lost · −" + (s.v ? (lost / s.v * 100).toFixed(1) : "0") + "%"));
+        host.appendChild(d);
+      }
+    });
+
+    var foot = el("p", "");
+    foot.style.cssText = "margin:16px 0 0;font-size:12.5px;color:var(--ink-2);border-top:1px solid var(--hair);padding-top:13px";
+    foot.innerHTML = isClean()
+      ? "Cleaned view — your 103 Bratislava sessions are removed at every step, including their 27 cart adds and 22 checkouts. One genuine Bratislava customer (order #1199) goes with them, so the last step reads one lower than the true tracked count."
+      : "Raw view — your own testing is still in every step. Bratislava alone contributes 27 of these 62 cart adds and 22 of the 43 checkouts.";
+    host.appendChild(foot);
+  }
+
+  /* ================= charts ================= */
+
+  function tooltip(tip, x, y, html) {
+    tip.innerHTML = html;
+    tip.style.left = x + "px";
+    tip.style.top = y + "px";
+    tip.style.opacity = "1";
+  }
+
+  function drawDaily() {
+    var host = document.getElementById("daily-chart");
+    var tip = document.getElementById("daily-tip");
+    host.innerHTML = "";
+    var W = host.clientWidth || 800, H = 240;
+    var m = { t: 14, r: 10, b: 26, l: 44 };
+    var iw = W - m.l - m.r, ih = H - m.t - m.b;
+    var max = 700;
+    var X = function (i) { return m.l + i * (iw / (DAILY.length - 1)); };
+    var Y = function (v) { return m.t + ih - (v / max) * ih; };
+
+    var svg = mk("svg", { viewBox: "0 0 " + W + " " + H, role: "img",
+      "aria-label": "Daily sessions, 25 July to 24 August 2026" });
+
+    [0, 175, 350, 525, 700].forEach(function (v) {
+      svg.appendChild(mk("line", { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v),
+        stroke: cssv("--hair"), "stroke-width": 1 }));
+      var tx = mk("text", { x: m.l - 9, y: Y(v) + 4, "text-anchor": "end",
+        fill: cssv("--muted"), "font-size": 10.5, "font-family": "IBM Plex Mono, monospace" });
+      tx.textContent = v;
+      svg.appendChild(tx);
+    });
+
+    var defs = mk("defs", {});
+    var grad = mk("linearGradient", { id: "ag", x1: 0, y1: 0, x2: 0, y2: 1 });
+    grad.appendChild(mk("stop", { offset: "0%", "stop-color": cssv("--s1"), "stop-opacity": 0.22 }));
+    grad.appendChild(mk("stop", { offset: "100%", "stop-color": cssv("--s1"), "stop-opacity": 0.02 }));
+    defs.appendChild(grad); svg.appendChild(defs);
+
+    var area = "M" + X(0) + "," + Y(0);
+    DAILY.forEach(function (d, i) { area += "L" + X(i) + "," + Y(d[1]); });
+    area += "L" + X(DAILY.length - 1) + "," + Y(0) + "Z";
+    svg.appendChild(mk("path", { d: area, fill: "url(#ag)" }));
+
+    var line = "";
+    DAILY.forEach(function (d, i) { line += (i ? "L" : "M") + X(i) + "," + Y(d[1]); });
+    svg.appendChild(mk("path", { d: line, fill: "none", stroke: cssv("--s1"),
+      "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }));
+
+    var pi = isClean() ? 5 : 4;
+    DAILY.forEach(function (d, i) {
+      if (d[pi] > 0) {
+        svg.appendChild(mk("circle", { cx: X(i), cy: Y(d[1]), r: 4.5,
+          fill: cssv("--f4"), stroke: cssv("--surface"), "stroke-width": 2 }));
+      }
+    });
+
+    var sx = X(17);
+    svg.appendChild(mk("line", { x1: sx, x2: sx, y1: m.t, y2: m.t + ih,
+      stroke: cssv("--critical"), "stroke-width": 1, "stroke-dasharray": "3 3", opacity: 0.6 }));
+    var an = mk("text", { x: sx - 8, y: m.t + 12, "text-anchor": "end",
+      fill: cssv("--critical-ink"), "font-size": 10.5, "font-family": "IBM Plex Mono, monospace" });
+    an.textContent = "10–11 Aug · 1,074 sessions, 0 orders";
+    svg.appendChild(an);
+
+    [0, 8, 16, 24, 30].forEach(function (i) {
+      var t = mk("text", { x: X(i), y: H - 6,
+        "text-anchor": i === 0 ? "start" : (i === 30 ? "end" : "middle"),
+        fill: cssv("--muted"), "font-size": 10.5, "font-family": "IBM Plex Mono, monospace" });
+      t.textContent = DAILY[i][0].slice(5).replace("-", "/");
+      svg.appendChild(t);
+    });
+
+    var cross = mk("line", { y1: m.t, y2: m.t + ih, stroke: cssv("--muted"), "stroke-width": 1, opacity: 0 });
+    svg.appendChild(cross);
+    var dot = mk("circle", { r: 5, fill: cssv("--s1"), stroke: cssv("--surface"), "stroke-width": 2, opacity: 0 });
+    svg.appendChild(dot);
+
+    var hit = mk("rect", { x: m.l, y: m.t, width: iw, height: ih, fill: "transparent" });
+    svg.appendChild(hit);
+    hit.addEventListener("mousemove", function (e) {
+      var r = svg.getBoundingClientRect();
+      var px = (e.clientX - r.left) / r.width * W;
+      var i = Math.max(0, Math.min(DAILY.length - 1, Math.round((px - m.l) / (iw / (DAILY.length - 1)))));
+      var d = DAILY[i];
+      cross.setAttribute("x1", X(i)); cross.setAttribute("x2", X(i)); cross.setAttribute("opacity", 0.45);
+      dot.setAttribute("cx", X(i)); dot.setAttribute("cy", Y(d[1])); dot.setAttribute("opacity", 1);
+      tooltip(tip, X(i) / W * r.width, Y(d[1]) / H * r.height,
+        '<div class="th">' + d[0] + "</div>" +
+        '<div class="row"><span>Sessions</span><span>' + fmt(d[1]) + "</span></div>" +
+        '<div class="row"><span>Cart adds</span><span>' + d[2] + "</span></div>" +
+        '<div class="row"><span>Checkouts</span><span>' + d[3] + "</span></div>" +
+        '<div class="row"><span>Tracked orders</span><span>' + d[pi] + "</span></div>" +
+        (isClean() && d[4] !== d[5]
+          ? '<div class="row" style="color:var(--muted);margin-top:4px"><span>yours, removed</span><span>' + (d[4] - d[5]) + "</span></div>"
+          : ""));
+    });
+    hit.addEventListener("mouseleave", function () {
+      cross.setAttribute("opacity", 0); dot.setAttribute("opacity", 0); tip.style.opacity = "0";
+    });
+
+    host.appendChild(svg);
+  }
+
+  function drawGrouped(hostId, tipId, groups, series) {
+    var host = document.getElementById(hostId);
+    var tip = document.getElementById(tipId);
+    host.innerHTML = "";
+    var W = host.clientWidth || 800, H = 250;
+    var m = { t: 16, r: 10, b: 44, l: 46 };
+    var iw = W - m.l - m.r, ih = H - m.t - m.b;
+    var svg = mk("svg", { viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": hostId });
+
+    [0, 25, 50, 75, 100].forEach(function (v) {
+      var y = m.t + ih - (v / 100) * ih;
+      svg.appendChild(mk("line", { x1: m.l, x2: W - m.r, y1: y, y2: y,
+        stroke: cssv("--hair"), "stroke-width": 1 }));
+      var t = mk("text", { x: m.l - 9, y: y + 4, "text-anchor": "end", fill: cssv("--muted"),
+        "font-size": 10.5, "font-family": "IBM Plex Mono, monospace" });
+      t.textContent = v + "%";
+      svg.appendChild(t);
+    });
+
+    var gw = iw / groups.length;
+    var bw = Math.min(46, (gw - 22) / series.length);
+
+    groups.forEach(function (g, gi) {
+      series.forEach(function (s, si) {
+        var v = s.values[gi];
+        var h = Math.max(v / 100 * ih, v > 0 ? 3 : 0);
+        var x = m.l + gi * gw + gw / 2 - (series.length * bw + 2 * (series.length - 1)) / 2 + si * (bw + 2);
+        var y = m.t + ih - h;
+        var rect = mk("rect", { x: x, y: y, width: bw, height: h, rx: 4, ry: 4, fill: cssv(s.color) });
+        rect.style.cursor = "crosshair";
+        rect.addEventListener("mouseenter", function () {
+          var r = svg.getBoundingClientRect();
+          tooltip(tip, (x + bw / 2) / W * r.width, y / H * r.height,
+            '<div class="th">' + g + "</div>" +
+            series.map(function (ss) {
+              return '<div class="row"><span>' + ss.name + "</span><span>" +
+                (ss.values[gi] < 10 ? ss.values[gi].toFixed(2) : ss.values[gi].toFixed(1)) + "%</span></div>" +
+                '<div class="row" style="color:var(--muted);margin-bottom:4px"><span>' + ss.raw[gi] + "</span><span></span></div>";
+            }).join(""));
+        });
+        rect.addEventListener("mouseleave", function () { tip.style.opacity = "0"; });
+        svg.appendChild(rect);
+
+        var lb = mk("text", { x: x + bw / 2, y: y - 6, "text-anchor": "middle",
+          fill: cssv("--ink-2"), "font-size": 11, "font-family": "IBM Plex Mono, monospace" });
+        lb.textContent = v === 0 ? "0" : (v < 10 ? v.toFixed(2) : v.toFixed(1)) + "%";
+        svg.appendChild(lb);
+      });
+
+      var gl = mk("text", { x: m.l + gi * gw + gw / 2, y: H - 24, "text-anchor": "middle",
+        fill: cssv("--ink-2"), "font-size": 11.5, "font-family": "IBM Plex Sans, sans-serif" });
+      gl.textContent = g;
+      svg.appendChild(gl);
+    });
+
+    host.appendChild(svg);
+  }
+
+  var STEPS = ["Session → cart", "Cart → checkout", "Checkout → order", "Session → order"];
+
+  function stepValues(t) {
+    return [
+      t.sessions ? t.cart / t.sessions * 100 : 0,
+      t.cart ? t.checkout / t.cart * 100 : 0,
+      t.checkout ? t.purchase / t.checkout * 100 : 0,
+      t.sessions ? t.purchase / t.sessions * 100 : 0
+    ];
+  }
+  function stepRaw(t) {
+    return [t.cart + " of " + fmt(t.sessions), t.checkout + " of " + t.cart,
+      t.purchase + " of " + t.checkout, t.purchase + " of " + fmt(t.sessions)];
+  }
+
+  function drawDevice() {
+    var mob = deviceTotals("mobile"), desk = deviceTotals("desktop");
+    document.getElementById("lg-mob").textContent = "Mobile · " + fmt(mob.sessions) + " sessions";
+    document.getElementById("lg-desk").textContent = "Desktop · " + fmt(desk.sessions) + " sessions";
+    drawGrouped("dev-chart", "dev-tip", STEPS, [
+      { name: "Mobile", color: "--s1", values: stepValues(mob), raw: stepRaw(mob) },
+      { name: "Desktop", color: "--s2", values: stepValues(desk), raw: stepRaw(desk) }
+    ]);
+
+    document.getElementById("dev-callout").innerHTML = isClean()
+      ? '<span class="ico">●</span><div><h3>Outside Bratislava, desktop is a flat zero</h3>' +
+        '<p>473 desktop sessions in 30 days, <strong>no cart adds, no checkouts, no orders</strong>. Every desktop event in the store came from your own machine. ' +
+        'The real store is a mobile store: 2,127 mobile sessions carry all 35 cart adds and all 4 tracked orders.</p>' +
+        '<p>That also means the desktop traffic itself is suspect — 383 of those sessions are "direct" desktop visits that touch nothing. That is the shape of bot traffic, not of shoppers.</p></div>'
+      : '<span class="ico">●</span><div><h3>This is the number that was wrong</h3>' +
+        '<p>Raw, desktop looks like it converts 3.1× better than mobile (0.72% vs 0.23%) on a quarter of the traffic. It does not. ' +
+        'Switch to the cleaned view: every one of those 23 desktop cart adds came from Bratislava — from you.</p></div>';
+  }
+
+  function drawEntry() {
+    var pdp = LANDING[0], home = LANDING[1], pdp2 = LANDING[4];
+    var v = isClean() ? "cl" : "raw";
+    var P = { sessions: pdp[v === "cl" ? 2 : 1][0] + pdp2[v === "cl" ? 2 : 1][0],
+              cart: pdp[v === "cl" ? 2 : 1][1] + pdp2[v === "cl" ? 2 : 1][1],
+              checkout: pdp[v === "cl" ? 2 : 1][2] + pdp2[v === "cl" ? 2 : 1][2],
+              purchase: pdp[v === "cl" ? 2 : 1][3] + pdp2[v === "cl" ? 2 : 1][3] };
+    var hv = home[v === "cl" ? 2 : 1];
+    var H = { sessions: hv[0], cart: hv[1], checkout: hv[2], purchase: hv[3] };
+
+    document.getElementById("lg-pdp").textContent = "Landed on the product page · " + fmt(P.sessions) + " sessions";
+    document.getElementById("lg-home").textContent = "Landed on the homepage · " + fmt(H.sessions) + " sessions";
+
+    drawGrouped("entry-chart", "entry-tip", STEPS, [
+      { name: "Product page first", color: "--s1", values: stepValues(P), raw: stepRaw(P) },
+      { name: "Homepage first", color: "--s2", values: stepValues(H), raw: stepRaw(H) }
+    ]);
+  }
+
+  // Clarity: product-page scroll map, 1,826 views — [% of page, % of visitors reaching it]
+  var SCROLL = [[5,99.7],[10,95.0],[15,66.3],[20,57.8],[25,47.7],[30,37.6],
+                [35,30.3],[40,24.7],[45,20.6],[50,18.9],[55,17.1]];
+
+  // Clarity: most-clicked elements on the product page
+  var CLICKS = [
+    ["Accept  (cookie banner)", 303, 15.0, true],
+    ["Ingredients", 189, 9.35, false],
+    ["Decline  (cookie banner)", 100, 4.95, true],
+    ["Benefits", 89, 4.40, false]
+  ];
+
+  function drawClicks() {
+    var host = document.getElementById("click-chart");
+    var tip = document.getElementById("click-tip");
+    host.innerHTML = "";
+    var W = host.clientWidth || 500, rowH = 46, H = CLICKS.length * rowH + 16;
+    var m = { l: 168, r: 52 };
+    var iw = W - m.l - m.r, max = 320;
+    var svg = mk("svg", { viewBox: "0 0 " + W + " " + H, role: "img",
+      "aria-label": "Most clicked elements on the product page" });
+
+    CLICKS.forEach(function (c, i) {
+      var y = i * rowH + 12;
+      var w = Math.max(c[1] / max * iw, 3);
+      var lab = mk("text", { x: m.l - 12, y: y + 15, "text-anchor": "end",
+        fill: cssv(c[3] ? "--critical-ink" : "--ink-2"), "font-size": 12,
+        "font-family": "IBM Plex Sans, sans-serif", "font-weight": c[3] ? 600 : 400 });
+      lab.textContent = c[0];
+      svg.appendChild(lab);
+
+      var rect = mk("rect", { x: m.l, y: y, width: w, height: 22, rx: 4, ry: 4,
+        fill: cssv(c[3] ? "--s2" : "--s1") });
+      rect.style.cursor = "crosshair";
+      rect.addEventListener("mouseenter", function () {
+        var r = svg.getBoundingClientRect();
+        tooltip(tip, (m.l + w) / W * r.width, y / H * r.height,
+          '<div class="th">' + c[0] + "</div>" +
+          '<div class="row"><span>Clicks</span><span>' + c[1] + "</span></div>" +
+          '<div class="row"><span>Share of taps</span><span>' + c[2].toFixed(2) + "%</span></div>");
+      });
+      rect.addEventListener("mouseleave", function () { tip.style.opacity = "0"; });
+      svg.appendChild(rect);
+
+      var val = mk("text", { x: m.l + w + 9, y: y + 16, fill: cssv("--ink-2"),
+        "font-size": 11.5, "font-family": "IBM Plex Mono, monospace" });
+      val.textContent = c[1];
+      svg.appendChild(val);
+    });
+
+    host.appendChild(svg);
+    var lg = el("div", "legend",
+      '<span><i class="swatch" style="background:var(--s2)"></i>Cookie consent banner</span>' +
+      '<span><i class="swatch" style="background:var(--s1)"></i>Actual page content</span>');
+    host.appendChild(lg);
+  }
+
+  function drawScroll() {
+    var host = document.getElementById("scroll-chart");
+    var tip = document.getElementById("scroll-tip");
+    host.innerHTML = "";
+    var W = host.clientWidth || 800, H = 260;
+    var m = { t: 16, r: 16, b: 44, l: 48 };
+    var iw = W - m.l - m.r, ih = H - m.t - m.b;
+    var X = function (p) { return m.l + (p - 5) / 50 * iw; };
+    var Y = function (v) { return m.t + ih - v / 100 * ih; };
+    var svg = mk("svg", { viewBox: "0 0 " + W + " " + H, role: "img",
+      "aria-label": "Share of product-page visitors reaching each scroll depth" });
+
+    [0, 25, 50, 75, 100].forEach(function (v) {
+      svg.appendChild(mk("line", { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v),
+        stroke: cssv("--hair"), "stroke-width": 1 }));
+      var t = mk("text", { x: m.l - 9, y: Y(v) + 4, "text-anchor": "end", fill: cssv("--muted"),
+        "font-size": 10.5, "font-family": "IBM Plex Mono, monospace" });
+      t.textContent = v + "%";
+      svg.appendChild(t);
+    });
+
+    var defs = mk("defs", {});
+    var g = mk("linearGradient", { id: "sg", x1: 0, y1: 0, x2: 0, y2: 1 });
+    g.appendChild(mk("stop", { offset: "0%", "stop-color": cssv("--s1"), "stop-opacity": 0.2 }));
+    g.appendChild(mk("stop", { offset: "100%", "stop-color": cssv("--s1"), "stop-opacity": 0.02 }));
+    defs.appendChild(g); svg.appendChild(defs);
+
+    var area = "M" + X(5) + "," + Y(0);
+    SCROLL.forEach(function (d) { area += "L" + X(d[0]) + "," + Y(d[1]); });
+    area += "L" + X(55) + "," + Y(0) + "Z";
+    svg.appendChild(mk("path", { d: area, fill: "url(#sg)" }));
+
+    var line = "";
+    SCROLL.forEach(function (d, i) { line += (i ? "L" : "M") + X(d[0]) + "," + Y(d[1]); });
+    svg.appendChild(mk("path", { d: line, fill: "none", stroke: cssv("--s1"),
+      "stroke-width": 2, "stroke-linejoin": "round" }));
+
+    // half-of-visitors reference
+    svg.appendChild(mk("line", { x1: m.l, x2: W - m.r, y1: Y(50), y2: Y(50),
+      stroke: cssv("--critical"), "stroke-width": 1, "stroke-dasharray": "4 3", opacity: 0.7 }));
+    var rl = mk("text", { x: W - m.r, y: Y(50) - 7, "text-anchor": "end",
+      fill: cssv("--critical-ink"), "font-size": 10.5, "font-family": "IBM Plex Mono, monospace" });
+    rl.textContent = "half of visitors gone by 24% of the page";
+    svg.appendChild(rl);
+
+    SCROLL.forEach(function (d) {
+      var c = mk("circle", { cx: X(d[0]), cy: Y(d[1]), r: 8, fill: "transparent" });
+      c.style.cursor = "crosshair";
+      c.addEventListener("mouseenter", function () {
+        var r = svg.getBoundingClientRect();
+        tooltip(tip, X(d[0]) / W * r.width, Y(d[1]) / H * r.height,
+          '<div class="th">' + d[0] + "% down the page</div>" +
+          '<div class="row"><span>Still there</span><span>' + d[1] + "%</span></div>" +
+          '<div class="row"><span>Visitors</span><span>' + Math.round(d[1] / 100 * 1826) + "</span></div>");
+      });
+      c.addEventListener("mouseleave", function () { tip.style.opacity = "0"; });
+      svg.appendChild(mk("circle", { cx: X(d[0]), cy: Y(d[1]), r: 3.5, fill: cssv("--s1") }));
+      svg.appendChild(c);
+    });
+
+    [5, 15, 25, 35, 45, 55].forEach(function (p) {
+      var t = mk("text", { x: X(p), y: H - 22, "text-anchor": "middle", fill: cssv("--ink-2"),
+        "font-size": 11, "font-family": "IBM Plex Mono, monospace" });
+      t.textContent = p + "%";
+      svg.appendChild(t);
+    });
+    var ax = mk("text", { x: m.l + iw / 2, y: H - 4, "text-anchor": "middle", fill: cssv("--muted"),
+      "font-size": 11, "font-family": "IBM Plex Sans, sans-serif" });
+    ax.textContent = "how far down the product page";
+    svg.appendChild(ax);
+
+    host.appendChild(svg);
+  }
+
+  function drawShip() {
+    drawGrouped("ship-chart", "ship-tip", STEPS, [
+      { name: "Markets you serve", color: "--s1", values: stepValues(SHIPPABLE), raw: stepRaw(SHIPPABLE) },
+      { name: "Can't ship there", color: "--s2", values: stepValues(UNSHIPPABLE), raw: stepRaw(UNSHIPPABLE) }
+    ]);
+  }
+
+  function drawDrops() {
+    var t = agg("all", "all");
+    var host = document.getElementById("drops");
+    var d1 = t.sessions - t.cart, d2 = t.cart - t.checkout, d3 = t.checkout - t.purchase;
+    host.innerHTML =
+      '<div class="callout crit"><span class="ico">1</span><div>' +
+        '<h3>Session → cart: −' + (d1 / t.sessions * 100).toFixed(1) + '%</h3>' +
+        '<p>' + fmt(d1) + ' of ' + fmt(t.sessions) + ' sessions never add anything. This is the whole problem in one number, and most of it is traffic quality: the <code>bg_ref</code> burst, the spam referrers, and 473 desktop sessions that touch nothing. Fix what you are buying before you touch the page.</p>' +
+      '</div></div>' +
+      '<div class="callout warn"><span class="ico">2</span><div>' +
+        '<h3>Cart → checkout: −' + (t.cart ? (d2 / t.cart * 100).toFixed(1) : 0) + '%</h3>' +
+        '<p>' + d2 + ' of ' + t.cart + ' carts never reach checkout. At this volume that is a handful of people, and ' + pct(t.checkout, t.cart) + ' cart-to-checkout is normal. This step is not where the money is.</p>' +
+      '</div></div>' +
+      '<div class="callout warn"><span class="ico">3</span><div>' +
+        '<h3>Checkout → order: −' + (t.checkout ? (d3 / t.checkout * 100).toFixed(1) : 0) + '%' +
+        (isClean() ? ' — but really −69%' : '') + '</h3>' +
+        '<p>' + d3 + ' of ' + t.checkout + ' people open checkout and leave. ' +
+        (isClean()
+          ? '<strong>Eight of those were from countries you do not ship to</strong> — the UK four times, plus Canada, Mexico, the UAE and Israel. They could not have finished. Among people you can serve, 4 of 13 do finish — a 31% completion rate: a normal problem, not an emergency.'
+          : 'Switch to the cleaned view — much of this is your own testing and traffic from countries the store does not sell to.') +
+        '</p>' +
+      '</div></div>' +
+      '<div class="callout info"><span class="ico">◆</span><div>' +
+        '<h3>Volume caveat</h3>' +
+        '<p>Below the first step every number here is single or double digits. Treat steps 2 and 3 as directional — the pattern is real, the precise percentage is not. Step 1 has ' + fmt(t.sessions) + ' observations and is solid.</p>' +
+      '</div></div>';
+  }
+
+  /* ================= render ================= */
+
+  function render() {
+    paintKpis();
+    srcTable.repaint();
+    landTable.repaint();
+    drawDaily(); drawDevice(); drawEntry(); drawShip(); drawFunnel(); drawDrops();
+    drawClicks(); drawScroll();
+  }
+
+  var rt;
+  window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(render, 140); });
+  if (window.matchMedia) {
+    var mq = window.matchMedia("(prefers-color-scheme: dark)");
+    if (mq.addEventListener) mq.addEventListener("change", render);
+  }
+
+  render();
+})();
+</script>
