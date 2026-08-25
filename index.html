@@ -524,7 +524,7 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
 
     <section>
       <h2>Sessions per day</h2>
-      <p class="sub">Hover any day for its full funnel. Two days — 10 and 11 August — carry 1,074 sessions, 40% of the month, and produced no orders.</p>
+      <p class="sub" id="daily-sub">Hover any day for its full funnel.</p>
       <div class="card chart-host">
         <div id="daily-chart"></div>
         <div class="tip" id="daily-tip"></div>
@@ -591,7 +591,7 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
     </section>
 
     <section>
-      <h2>Country — and whether you can ship there<span class="winbadge">fixed window · 25 Jul – 24 Aug</span></h2>
+      <h2>Country — and whether you can ship there</h2>
       <p class="sub">Traffic by the country the browser was in, checked against your live Shopify markets and delivery zones. Your Bratislava sessions sit on their own line. Where the <em>orders</em> went is a different table — it's on the "What to trust" tab, and it does not look like this one.</p>
       <div class="filters">
         <div class="fgroup">
@@ -617,22 +617,7 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
           <tbody></tbody>
         </table>
       </div>
-      <div class="callout crit">
-        <span class="ico">●</span>
-        <div>
-          <h3>29% of your traffic goes to countries you don't sell to</h3>
-          <p>Your live markets are <strong>Czechia, the EU and the United States</strong>. The UK is not one of them — so those 354 UK sessions, 7 cart adds and 4 checkouts were never capable of becoming orders. Same for Canada, Australia, Switzerland, Norway, Mexico, Israel and the rest: <strong>743 sessions, 12 cart adds and 8 checkouts from people the store cannot serve.</strong></p>
-          <p>That is a third of every cart add in the month spent on customers who hit a wall. It is not a checkout problem to fix — it is an audience you are paying for and cannot fulfil. Either open the markets or stop sending traffic there.</p>
-        </div>
-      </div>
-      <div class="callout crit">
-        <span class="ico">●</span>
-        <div>
-          <h3>The US is the real anomaly now</h3>
-          <p>The US <em>is</em> an active market with Wasabi Logistics rates and a free-shipping option. It is 60% of all traffic you can actually serve — 1,104 sessions — and it produced <strong>5 cart adds and zero orders</strong>. Italy, on a twelfth of the traffic, produced 7 cart adds and 4 orders.</p>
-          <p>The breakdown says why: 496 of those US sessions arrive with no referrer at all and 115 come from ad-network frames and the unrecognised domains. Roughly <strong>600 of 1,104 US sessions look non-human</strong>. The 62 from Instagram and 95 from Linktree are the real US audience, and they are small.</p>
-        </div>
-      </div>
+      <div id="country-callouts"></div>
     </section>
   </div>
 
@@ -660,7 +645,7 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
     </section>
 
     <section>
-      <h2>Product page first vs. homepage first<span class="winbadge">fixed window · 25 Jul – 24 Aug</span></h2>
+      <h2>Product page first vs. homepage first</h2>
       <p class="sub">Same store, same month. The difference is which door people walk through.</p>
       <div class="card chart-host">
         <div id="entry-chart"></div>
@@ -754,34 +739,17 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
     </section>
 
     <section>
-      <h2>People who could actually buy<span class="winbadge">fixed window · 25 Jul – 24 Aug</span></h2>
+      <h2>People who could actually buy</h2>
       <p class="sub">The same cleaned month, split by whether the store ships to the visitor's country. This is the split that explains most of the checkout drop.</p>
       <div class="card chart-host">
         <div id="ship-chart"></div>
         <div class="tip" id="ship-tip"></div>
         <div class="legend">
-          <span><i class="swatch" style="background:var(--s1)"></i>Markets you serve · 1,833 sessions</span>
-          <span><i class="swatch" style="background:var(--s2)"></i>Countries you can't ship to · 743 sessions</span>
+          <span><i class="swatch" style="background:var(--s1)"></i><span id="lg-ships">Markets you serve</span></span>
+          <span><i class="swatch" style="background:var(--s2)"></i><span id="lg-noships">Countries you can't ship to</span></span>
         </div>
       </div>
-      <div class="grid2" style="margin-top:16px">
-        <div class="callout good">
-          <span class="ico">✓</span>
-          <div>
-            <h3>Checkout is not as broken as it looked</h3>
-            <p>Among people you can actually serve, checkout→order is <strong>31%</strong> (4 of 13), not the 19% the whole-store figure showed. Still under the 50–70% a healthy store sees, but a normal problem rather than an alarming one.</p>
-            <p>The 8 checkouts that came from unservable countries all failed by definition. Counting them as abandonment was measuring your own market settings.</p>
-          </div>
-        </div>
-        <div class="callout warn">
-          <span class="ico">▲</span>
-          <div>
-            <h3>The top of the funnel is where the waste is</h3>
-            <p>1,833 servable sessions produced 23 cart adds — <strong>1.25%</strong>. Take out the US bot traffic and the servable audience is closer to 1,200 real people, most of them Italian and Central European, converting at a rate the small order count can't yet measure reliably.</p>
-            <p>The month's honest summary: too little real traffic, pointed at the wrong countries, landing on the wrong page.</p>
-          </div>
-        </div>
-      </div>
+      <div class="grid2" id="ship-callouts" style="margin-top:16px"></div>
     </section>
 
     <section>
@@ -1255,41 +1223,14 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
   };
 
   // session country — cleaned figures (Bratislava excluded); Bratislava on its own line
-  // name, sessions, cart, checkout, tracked orders, isOwnTesting, realOrdersShipped, shipsThere
-  var COUNTRIES = [
-    ["United States",  1104, 5, 2, 0, false, 0, true],
-    ["United Kingdom",  354, 7, 4, 0, false, 0, false],
-    ["Italy",           137, 7, 5, 2, false, 4, true],
-    ["Germany",         114, 2, 1, 0, false, 1, true],
-    ["Spain",           110, 1, 0, 0, false, 1, true],
-    ["Bratislava, SK",  103, 27, 22, 5, true,  1, true],
-    ["Canada",           76, 1, 1, 0, false, 0, false],
-    ["Portugal",         60, 1, 0, 0, false, 0, true],
-    ["Belgium",          59, 1, 0, 0, false, 0, true],
-    ["Netherlands",      59, 1, 0, 0, false, 0, true],
-    ["Australia",        55, 2, 0, 0, false, 0, false],
-    ["Czechia",          39, 2, 3, 1, false, 1, true],
-    ["India",            36, 0, 0, 0, false, 0, false],
-    ["Singapore",        30, 0, 0, 0, false, 0, false],
-    ["China",            27, 0, 0, 0, false, 0, false],
-    ["Switzerland",      24, 0, 0, 0, false, 0, false],
-    ["Romania",          22, 0, 0, 0, false, 0, true],
-    ["Norway",           22, 0, 0, 0, false, 0, false],
-    ["France",           20, 0, 0, 0, false, 0, true],
-    ["Sweden",           18, 0, 0, 0, false, 0, true],
-    ["Slovakia, rest",   16, 3, 2, 1, false, 1, true],
-    ["Ireland",          16, 0, 0, 0, false, 0, true],
-    ["South Africa",     14, 0, 0, 0, false, 0, false],
-    ["New Zealand",      13, 0, 0, 0, false, 0, false],
-    ["Austria",          11, 0, 0, 0, false, 0, true],
-    ["Mexico",           10, 1, 1, 0, false, 0, false],
-    ["United Arab Em.",   8, 0, 1, 0, false, 0, false],
-    ["Israel",            7, 1, 1, 0, false, 0, false]
-  ];
+  // Country day cube: [dayIdx, countryIdx, s,c,k,p raw, s,c,k,p cleaned]. CSHIPS[i]=1 if the store ships there.
+  var CNAMES=["United States", "United Kingdom", "Italy", "Germany", "Slovakia", "Spain", "Canada", "Portugal", "Netherlands", "Belgium", "Czechia", "Australia", "India", "Singapore", "China", "Switzerland", "Romania", "Norway", "Bratislava, SK", "Other · ships there", "Other · no market"];
+  var CSHIPS=[1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0];
+  var CDAY=[[0,0,2,0,0,0,2,0,0,0],[14,0,1,0,0,0,1,0,0,0],[18,0,2,0,0,0,2,0,0,0],[21,0,2,0,0,0,2,0,0,0],[23,0,57,0,0,0,57,0,0,0],[23,10,3,2,0,0,3,2,0,0],[24,0,21,0,0,0,21,0,0,0],[24,4,1,0,0,0,1,0,0,0],[24,10,4,0,0,0,4,0,0,0],[25,0,6,0,0,0,6,0,0,0],[25,4,0,0,0,0,0,0,0,0],[25,10,1,0,0,0,1,0,0,0],[25,18,1,0,0,0,0,0,0,0],[28,0,9,0,0,0,9,0,0,0],[29,0,22,0,0,0,22,0,0,0],[29,10,2,0,0,0,2,0,0,0],[29,16,1,0,0,0,1,0,0,0],[31,0,3,0,0,0,3,0,0,0],[34,0,3,0,0,0,3,0,0,0],[35,0,4,0,0,0,4,0,0,0],[35,20,2,0,0,0,2,0,0,0],[36,0,4,0,0,0,4,0,0,0],[37,13,1,0,0,0,1,0,0,0],[38,0,3,0,0,0,3,0,0,0],[39,0,6,0,0,0,6,0,0,0],[40,0,6,0,0,0,6,0,0,0],[41,0,6,0,0,0,6,0,0,0],[42,0,4,0,0,0,4,0,0,0],[43,0,3,0,0,0,3,0,0,0],[44,4,1,0,0,0,1,0,0,0],[45,0,8,0,0,0,8,0,0,0],[45,4,0,0,0,0,0,0,0,0],[45,18,1,1,1,0,0,0,0,0],[46,0,13,0,0,0,13,0,0,0],[48,0,10,0,0,0,10,0,0,0],[49,0,20,0,0,0,20,0,0,0],[49,2,1,0,0,0,1,0,0,0],[49,4,0,0,0,0,0,0,0,0],[49,18,1,0,0,0,0,0,0,0],[50,0,16,0,0,0,16,0,0,0],[50,4,1,1,0,0,1,1,0,0],[50,18,7,2,2,1,0,0,0,0],[51,0,9,0,0,0,9,0,0,0],[51,1,1,0,0,0,1,0,0,0],[51,2,1,0,0,0,1,0,0,0],[51,4,0,0,0,0,0,0,0,0],[51,6,1,0,0,0,1,0,0,0],[51,10,1,0,0,0,1,0,0,0],[51,12,1,0,0,0,1,0,0,0],[51,14,2,0,0,0,2,0,0,0],[51,18,15,7,6,0,0,0,0,0],[52,0,22,0,0,0,22,0,0,0],[52,2,4,1,0,0,4,1,0,0],[52,3,6,0,0,0,6,0,0,0],[52,4,0,0,0,0,0,0,0,0],[52,5,1,0,0,0,1,0,0,0],[52,8,1,0,0,0,1,0,0,0],[52,10,3,0,0,0,3,0,0,0],[52,13,3,0,0,0,3,0,0,0],[52,14,2,0,0,0,2,0,0,0],[52,15,1,0,0,0,1,0,0,0],[52,18,11,6,3,1,0,0,0,0],[52,19,1,0,0,0,1,0,0,0],[52,20,1,0,0,0,1,0,0,0],[53,0,21,0,0,0,21,0,0,0],[53,2,2,1,1,0,2,1,1,0],[53,3,8,1,1,0,8,1,1,0],[53,4,1,0,0,0,1,0,0,0],[53,5,1,0,0,0,1,0,0,0],[53,6,1,0,0,0,1,0,0,0],[53,9,1,0,0,0,1,0,0,0],[53,12,1,0,0,0,1,0,0,0],[53,13,1,0,0,0,1,0,0,0],[53,15,3,0,0,0,3,0,0,0],[53,18,8,0,0,0,0,0,0,0],[54,0,4,0,0,0,4,0,0,0],[54,1,1,0,0,0,1,0,0,0],[54,2,1,0,0,0,1,0,0,0],[54,3,4,0,0,0,4,0,0,0],[54,4,1,1,1,1,1,1,1,1],[54,7,8,0,0,0,8,0,0,0],[54,8,6,0,0,0,6,0,0,0],[54,9,2,0,0,0,2,0,0,0],[54,12,2,0,0,0,2,0,0,0],[54,18,1,0,0,0,0,0,0,0],[54,19,1,0,0,0,1,0,0,0],[54,20,4,0,0,0,4,0,0,0],[55,0,12,0,0,0,12,0,0,0],[55,2,1,0,0,0,1,0,0,0],[55,3,1,0,0,0,1,0,0,0],[55,4,1,0,0,0,1,0,0,0],[55,10,2,0,0,0,2,0,0,0],[55,13,1,0,0,0,1,0,0,0],[55,14,4,0,0,0,4,0,0,0],[55,18,1,0,0,0,0,0,0,0],[55,20,6,0,0,0,6,0,0,0],[56,0,177,0,0,0,177,0,0,0],[56,1,103,1,1,0,103,1,1,0],[56,2,3,0,0,0,3,0,0,0],[56,3,8,0,0,0,8,0,0,0],[56,4,2,0,0,0,2,0,0,0],[56,5,4,0,0,0,4,0,0,0],[56,6,18,0,0,0,18,0,0,0],[56,7,2,0,0,0,2,0,0,0],[56,8,8,0,0,0,8,0,0,0],[56,9,2,0,0,0,2,0,0,0],[56,10,6,0,0,0,6,0,0,0],[56,11,3,0,0,0,3,0,0,0],[56,12,10,0,0,0,10,0,0,0],[56,13,2,0,0,0,2,0,0,0],[56,14,2,0,0,0,2,0,0,0],[56,15,4,0,0,0,4,0,0,0],[56,16,2,0,0,0,2,0,0,0],[56,17,4,0,0,0,4,0,0,0],[56,18,10,2,2,0,0,0,0,0],[56,19,20,0,0,0,20,0,0,0],[56,20,47,0,0,0,47,0,0,0],[57,0,305,3,1,0,305,3,1,0],[57,1,74,4,1,0,74,4,1,0],[57,2,18,0,0,0,18,0,0,0],[57,3,15,0,0,0,15,0,0,0],[57,4,5,0,0,0,5,0,0,0],[57,5,66,0,0,0,66,0,0,0],[57,6,18,0,0,0,18,0,0,0],[57,7,4,0,0,0,4,0,0,0],[57,8,7,1,0,0,7,1,0,0],[57,9,13,0,0,0,13,0,0,0],[57,10,7,0,0,0,7,0,0,0],[57,11,13,1,0,0,13,1,0,0],[57,12,7,0,0,0,7,0,0,0],[57,13,5,0,0,0,5,0,0,0],[57,15,2,0,0,0,2,0,0,0],[57,16,14,0,0,0,14,0,0,0],[57,17,5,0,0,0,5,0,0,0],[57,18,3,1,1,0,0,0,0,0],[57,19,35,0,0,0,35,0,0,0],[57,20,21,0,0,0,21,0,0,0],[58,0,53,1,1,0,53,1,1,0],[58,1,25,1,0,0,25,1,0,0],[58,2,3,1,0,0,3,1,0,0],[58,3,7,0,0,0,7,0,0,0],[58,4,1,1,1,0,1,1,1,0],[58,6,5,0,0,0,5,0,0,0],[58,8,2,0,0,0,2,0,0,0],[58,11,5,0,0,0,5,0,0,0],[58,12,4,0,0,0,4,0,0,0],[58,13,1,0,0,0,1,0,0,0],[58,15,1,0,0,0,1,0,0,0],[58,16,3,0,0,0,3,0,0,0],[58,17,3,0,0,0,3,0,0,0],[58,18,2,0,0,0,0,0,0,0],[58,19,9,0,0,0,9,0,0,0],[58,20,6,0,0,0,6,0,0,0],[59,0,26,0,0,0,26,0,0,0],[59,1,12,1,2,0,12,1,2,0],[59,2,4,0,0,0,4,0,0,0],[59,3,1,0,0,0,1,0,0,0],[59,4,1,0,0,0,1,0,0,0],[59,5,1,0,0,0,1,0,0,0],[59,6,2,1,1,0,2,1,1,0],[59,8,3,0,0,0,3,0,0,0],[59,10,1,0,0,0,1,0,0,0],[59,11,2,0,0,0,2,0,0,0],[59,13,1,0,0,0,1,0,0,0],[59,14,5,0,0,0,5,0,0,0],[59,15,1,0,0,0,1,0,0,0],[59,16,1,0,0,0,1,0,0,0],[59,17,4,0,0,0,4,0,0,0],[59,18,2,0,0,0,0,0,0,0],[59,19,6,0,0,0,6,0,0,0],[59,20,3,0,0,0,3,0,0,0],[60,0,22,0,0,0,22,0,0,0],[60,1,10,0,0,0,10,0,0,0],[60,2,2,0,0,0,2,0,0,0],[60,3,1,0,0,0,1,0,0,0],[60,4,1,0,0,0,1,0,0,0],[60,6,2,0,0,0,2,0,0,0],[60,7,1,0,0,0,1,0,0,0],[60,10,1,0,1,0,1,0,1,0],[60,11,9,0,0,0,9,0,0,0],[60,12,2,0,0,0,2,0,0,0],[60,13,15,0,0,0,15,0,0,0],[60,17,2,0,0,0,2,0,0,0],[60,18,5,2,2,2,0,0,0,0],[60,19,3,0,0,0,3,0,0,0],[60,20,8,1,1,0,8,1,1,0],[61,0,12,0,0,0,12,0,0,0],[61,1,4,0,0,0,4,0,0,0],[61,2,1,0,0,0,1,0,0,0],[61,3,2,0,0,0,2,0,0,0],[61,6,6,0,0,0,6,0,0,0],[61,11,2,0,0,0,2,0,0,0],[61,13,1,0,0,0,1,0,0,0],[61,14,3,0,0,0,3,0,0,0],[61,16,1,0,0,0,1,0,0,0],[61,19,3,0,0,0,3,0,0,0],[61,20,5,0,0,0,5,0,0,0],[62,0,29,0,0,0,29,0,0,0],[62,1,5,0,0,0,5,0,0,0],[62,2,2,0,0,0,2,0,0,0],[62,4,0,0,0,0,0,0,0,0],[62,5,1,0,0,0,1,0,0,0],[62,6,3,0,0,0,3,0,0,0],[62,11,3,0,0,0,3,0,0,0],[62,12,2,0,0,0,2,0,0,0],[62,17,1,0,0,0,1,0,0,0],[62,18,1,0,0,0,0,0,0,0],[62,19,3,0,0,0,3,0,0,0],[62,20,3,0,0,0,3,0,0,0],[63,0,76,0,0,0,76,0,0,0],[63,1,8,0,0,0,8,0,0,0],[63,3,3,0,0,0,3,0,0,0],[63,4,1,0,0,0,1,0,0,0],[63,5,2,0,0,0,2,0,0,0],[63,6,3,0,0,0,3,0,0,0],[63,7,5,0,0,0,5,0,0,0],[63,10,2,1,1,1,2,1,1,1],[63,11,2,0,0,0,2,0,0,0],[63,12,3,0,0,0,3,0,0,0],[63,14,2,0,0,0,2,0,0,0],[63,18,6,0,0,0,0,0,0,0],[63,19,3,0,0,0,3,0,0,0],[63,20,9,0,0,0,9,0,0,0],[64,0,30,0,0,0,30,0,0,0],[64,1,9,0,0,0,9,0,0,0],[64,2,2,0,0,0,2,0,0,0],[64,3,3,1,0,0,3,1,0,0],[64,4,1,0,0,0,1,0,0,0],[64,6,1,0,0,0,1,0,0,0],[64,7,1,0,0,0,1,0,0,0],[64,8,3,0,0,0,3,0,0,0],[64,9,5,0,0,0,5,0,0,0],[64,11,3,0,0,0,3,0,0,0],[64,12,3,0,0,0,3,0,0,0],[64,14,2,0,0,0,2,0,0,0],[64,18,5,2,2,0,0,0,0,0],[64,19,4,0,0,0,4,0,0,0],[64,20,4,0,0,0,4,0,0,0],[65,0,49,0,0,0,49,0,0,0],[65,1,22,0,0,0,22,0,0,0],[65,3,11,0,0,0,11,0,0,0],[65,4,0,0,0,0,0,0,0,0],[65,5,1,0,0,0,1,0,0,0],[65,6,3,0,0,0,3,0,0,0],[65,7,2,0,0,0,2,0,0,0],[65,8,6,0,0,0,6,0,0,0],[65,9,9,0,0,0,9,0,0,0],[65,10,3,0,0,0,3,0,0,0],[65,11,3,0,0,0,3,0,0,0],[65,12,1,0,0,0,1,0,0,0],[65,15,1,0,0,0,1,0,0,0],[65,16,1,0,0,0,1,0,0,0],[65,18,4,0,0,0,0,0,0,0],[65,19,2,0,0,0,2,0,0,0],[65,20,2,0,0,0,2,0,0,0],[66,0,54,1,0,0,54,1,0,0],[66,1,12,0,0,0,12,0,0,0],[66,2,32,2,3,0,32,2,3,0],[66,3,36,0,0,0,36,0,0,0],[66,4,1,0,0,0,1,0,0,0],[66,5,24,1,0,0,24,1,0,0],[66,6,2,0,0,0,2,0,0,0],[66,7,23,1,0,0,23,1,0,0],[66,8,12,0,0,0,12,0,0,0],[66,9,17,1,0,0,17,1,0,0],[66,10,8,0,0,0,8,0,0,0],[66,11,3,0,0,0,3,0,0,0],[66,14,1,0,0,0,1,0,0,0],[66,15,3,0,0,0,3,0,0,0],[66,18,3,0,0,0,0,0,0,0],[66,19,10,0,0,0,10,0,0,0],[66,20,6,0,1,0,6,0,1,0],[67,0,48,0,0,0,48,0,0,0],[67,1,20,0,0,0,20,0,0,0],[67,2,46,2,1,2,46,2,1,2],[67,3,3,0,0,0,3,0,0,0],[67,4,1,1,0,0,1,1,0,0],[67,5,7,0,0,0,7,0,0,0],[67,6,3,0,0,0,3,0,0,0],[67,7,9,0,0,0,9,0,0,0],[67,8,1,0,0,0,1,0,0,0],[67,9,5,0,0,0,5,0,0,0],[67,14,2,0,0,0,2,0,0,0],[67,15,2,0,0,0,2,0,0,0],[67,18,3,1,1,0,0,0,0,0],[67,19,4,0,0,0,4,0,0,0],[67,20,9,0,0,0,9,0,0,0],[68,0,15,0,0,0,15,0,0,0],[68,1,21,0,0,0,21,0,0,0],[68,2,7,0,0,0,7,0,0,0],[68,3,1,0,0,0,1,0,0,0],[68,4,0,0,0,0,0,0,0,0],[68,5,1,0,0,0,1,0,0,0],[68,6,2,0,0,0,2,0,0,0],[68,7,1,0,0,0,1,0,0,0],[68,8,2,0,0,0,2,0,0,0],[68,9,1,0,0,0,1,0,0,0],[68,10,1,0,0,0,1,0,0,0],[68,14,1,0,0,0,1,0,0,0],[68,15,1,0,0,0,1,0,0,0],[68,17,2,0,0,0,2,0,0,0],[68,18,3,2,2,1,0,0,0,0],[68,19,3,0,0,0,3,0,0,0],[68,20,6,0,0,0,6,0,0,0],[69,0,23,0,0,0,23,0,0,0],[69,1,15,0,0,0,15,0,0,0],[69,2,2,0,0,0,2,0,0,0],[69,4,1,0,0,0,1,0,0,0],[69,6,5,0,0,0,5,0,0,0],[69,7,1,0,0,0,1,0,0,0],[69,8,1,0,0,0,1,0,0,0],[69,9,2,0,0,0,2,0,0,0],[69,10,1,0,0,0,1,0,0,0],[69,11,3,0,0,0,3,0,0,0],[69,15,4,0,0,0,4,0,0,0],[69,17,1,0,0,0,1,0,0,0],[69,18,2,0,0,0,0,0,0,0],[69,19,9,0,0,0,9,0,0,0],[69,20,8,1,1,0,8,1,1,0],[70,0,67,1,1,0,67,1,1,0],[70,1,23,0,0,0,23,0,0,0],[70,2,6,0,0,0,6,0,0,0],[70,3,12,0,0,0,12,0,0,0],[70,4,1,0,0,0,1,0,0,0],[70,5,6,0,0,0,6,0,0,0],[70,6,1,0,0,0,1,0,0,0],[70,7,8,0,0,0,8,0,0,0],[70,8,10,0,0,0,10,0,0,0],[70,9,5,1,1,0,5,1,1,0],[70,10,7,1,1,0,7,1,1,0],[70,11,4,1,0,0,4,1,0,0],[70,14,1,0,0,0,1,0,0,0],[70,15,4,1,0,0,4,1,0,0],[70,17,1,0,0,0,1,0,0,0],[70,18,5,0,0,0,0,0,0,0],[70,19,12,0,0,0,12,0,0,0],[70,20,14,1,1,0,14,1,1,0],[71,0,32,2,2,0,32,2,2,0],[71,1,7,0,0,0,7,0,0,0],[71,2,1,0,0,0,1,0,0,0],[71,3,3,0,0,0,3,0,0,0],[71,4,1,0,0,0,1,0,0,0],[71,5,7,0,0,0,7,0,0,0],[71,6,1,0,0,0,1,0,0,0],[71,7,5,0,0,0,5,0,0,0],[71,8,3,0,0,0,3,0,0,0],[71,9,1,0,0,0,1,0,0,0],[71,10,2,0,0,0,2,0,0,0],[71,19,1,0,0,0,1,0,0,0],[71,20,4,1,1,0,4,1,1,0]];
 
-  // whole-window rollups by whether the store can ship there (cleaned view, all 50 countries)
-  var SHIPPABLE   = { sessions: 1833, cart: 23, checkout: 13, purchase: 4 };
-  var UNSHIPPABLE = { sessions: 743,  cart: 12, checkout: 8,  purchase: 0 };
+  // Landing-page day series, keyed by day index. Raw basis — see the note on that chart.
+  var LPDP={23:[3,2,0,0],49:[1,0,0,0],51:[5,2,1,0],52:[6,1,1,0],53:[8,0,0,0],54:[21,0,0,0],55:[3,0,0,0],56:[262,2,2,0],57:[209,6,1,0],58:[79,1,0,0],59:[45,2,2,0],60:[48,1,1,0],61:[23,0,0,0],62:[41,0,0,0],63:[84,0,0,0],64:[33,1,0,0],65:[66,0,0,0],66:[145,5,3,0],67:[79,1,0,1],68:[52,0,0,0],69:[60,0,0,0],70:[125,2,1,0],71:[43,2,1,0]};
+  var LHOME={28:[9,0,0,0],29:[24,0,0,0],31:[3,0,0,0],34:[3,0,0,0],35:[3,0,0,0],36:[4,0,0,0],38:[3,0,0,0],39:[6,0,0,0],40:[6,0,0,0],41:[6,0,0,0],42:[4,0,0,0],43:[3,0,0,0],44:[1,0,0,0],45:[7,1,1,0],46:[3,0,0,0],48:[9,0,0,0],49:[20,0,0,0],50:[16,2,1,1],51:[22,4,4,0],52:[41,6,2,1],53:[33,2,2,0],54:[12,1,1,1],55:[14,0,0,0],56:[142,1,1,0],57:[415,4,1,0],58:[18,2,1,0],59:[24,0,0,0],60:[17,2,2,2],61:[9,0,0,0],62:[9,0,0,0],63:[27,1,1,1],64:[36,2,2,0],65:[49,0,0,0],66:[88,0,0,0],67:[73,3,2,1],68:[15,2,2,1],69:[9,1,1,0],70:[54,4,3,0],71:[23,1,1,0]};
 
   // path, raw funnel, cleaned funnel
   var LANDING = [
@@ -1554,12 +1495,33 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
 
   /* ================= country table ================= */
 
-  var cRows = COUNTRIES.map(function (r) {
-    return { k: r[0], sessions: r[1], cart: r[2], checkout: r[3], purchase: r[4],
-             own: r[5], real: r[6], ships: r[7] };
-  });
-  var cMax = 1104;
+  var REAL_SHIPPED = { Italy: 4, Slovakia: 2, Czechia: 1, Germany: 1, Spain: 1 };
+
+  function countryRows() {
+    var off = isClean() ? 6 : 2;
+    var acc = {};
+    CDAY.forEach(function (r) {
+      if (r[0] < range.a || r[0] > range.b) return;
+      var name = CNAMES[r[1]];
+      if (isClean() && name === "Bratislava, SK") return;
+      var t = acc[name] || (acc[name] = { k: name, sessions: 0, cart: 0, checkout: 0, purchase: 0,
+        own: name === "Bratislava, SK", ships: !!CSHIPS[r[1]], real: REAL_SHIPPED[name] || 0 });
+      t.sessions += r[off]; t.cart += r[off+1]; t.checkout += r[off+2]; t.purchase += r[off+3];
+    });
+    return Object.keys(acc).map(function (k) { return acc[k]; })
+      .filter(function (r) { return r.sessions > 0; });
+  }
+
+  var cRows = countryRows();
+  var cMax = 1;
   var cFilter = "all";
+
+  function refreshCountryRows() {
+    var fresh = countryRows();
+    cRows.length = 0;
+    fresh.forEach(function (r) { cRows.push(r); });
+    cMax = Math.max.apply(null, cRows.map(function (r) { return r.sessions; }).concat([1]));
+  }
 
   var countryTable = makeTable("tbl-country", cRows, function (r) {
     var tr = el("tr", r.own ? "own" : "");
@@ -2191,30 +2153,36 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
         ' on mobile. It does not. Switch to the cleaned view: every one of those desktop cart adds came from Bratislava, from you.</p></div>';
   }
 
-  function drawEntry() {
-    var pdp = LANDING[0], home = LANDING[1], pdp2 = LANDING[4];
-    var v = isClean() ? "cl" : "raw";
-    var P = { sessions: pdp[v === "cl" ? 2 : 1][0] + pdp2[v === "cl" ? 2 : 1][0],
-              cart: pdp[v === "cl" ? 2 : 1][1] + pdp2[v === "cl" ? 2 : 1][1],
-              checkout: pdp[v === "cl" ? 2 : 1][2] + pdp2[v === "cl" ? 2 : 1][2],
-              purchase: pdp[v === "cl" ? 2 : 1][3] + pdp2[v === "cl" ? 2 : 1][3] };
-    var hv = home[v === "cl" ? 2 : 1];
-    var H = { sessions: hv[0], cart: hv[1], checkout: hv[2], purchase: hv[3] };
+  function landAgg(map) {
+    var t = { sessions: 0, cart: 0, checkout: 0, purchase: 0 };
+    for (var i = range.a; i <= range.b; i++) {
+      var v = map[i];
+      if (!v) continue;
+      t.sessions += v[0]; t.cart += v[1]; t.checkout += v[2]; t.purchase += v[3];
+    }
+    return t;
+  }
 
+  function drawEntry() {
+    var P = landAgg(LPDP), H = landAgg(LHOME);
     document.getElementById("lg-pdp").textContent = "Landed on the product page · " + fmt(P.sessions) + " sessions";
     document.getElementById("lg-home").textContent = "Landed on the homepage · " + fmt(H.sessions) + " sessions";
-
+    if (!P.sessions && !H.sessions) {
+      document.getElementById("entry-chart").innerHTML =
+        '<p class="sub" style="margin:8px 0">Neither page took a session in this window.</p>';
+      return;
+    }
     drawGrouped("entry-chart", "entry-tip", STEPS, [
       { name: "Product page first", color: "--s1", values: stepValues(P), raw: stepRaw(P) },
       { name: "Homepage first", color: "--s2", values: stepValues(H), raw: stepRaw(H) }
     ]);
   }
 
-  // Clarity: product-page scroll map, 1,826 views — [% of page, % of visitors reaching it]
+  /* ---- Clarity snapshot, 24 Aug: product-page scroll map and click ranking ---- */
+
   var SCROLL = [[5,99.7],[10,95.0],[15,66.3],[20,57.8],[25,47.7],[30,37.6],
                 [35,30.3],[40,24.7],[45,20.6],[50,18.9],[55,17.1]];
 
-  // Clarity: most-clicked elements on the product page
   var CLICKS = [
     ["Accept  (cookie banner)", 303, 15.0, true],
     ["Ingredients", 189, 9.35, false],
@@ -2261,10 +2229,9 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
     });
 
     host.appendChild(svg);
-    var lg = el("div", "legend",
+    host.appendChild(el("div", "legend",
       '<span><i class="swatch" style="background:var(--s2)"></i>Cookie consent banner</span>' +
-      '<span><i class="swatch" style="background:var(--s1)"></i>Actual page content</span>');
-    host.appendChild(lg);
+      '<span><i class="swatch" style="background:var(--s1)"></i>Actual page content</span>'));
   }
 
   function drawScroll() {
@@ -2304,7 +2271,6 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
     svg.appendChild(mk("path", { d: line, fill: "none", stroke: cssv("--s1"),
       "stroke-width": 2, "stroke-linejoin": "round" }));
 
-    // half-of-visitors reference
     svg.appendChild(mk("line", { x1: m.l, x2: W - m.r, y1: Y(50), y2: Y(50),
       stroke: cssv("--critical"), "stroke-width": 1, "stroke-dasharray": "4 3", opacity: 0.7 }));
     var rl = mk("text", { x: W - m.r, y: Y(50) - 7, "text-anchor": "end",
@@ -2341,11 +2307,89 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
     host.appendChild(svg);
   }
 
+  function t0() { return agg("all", "all"); }
+
+  function shipSplit() {
+    var off = isClean() ? 6 : 2;
+    var yes = { sessions: 0, cart: 0, checkout: 0, purchase: 0 };
+    var no  = { sessions: 0, cart: 0, checkout: 0, purchase: 0 };
+    CDAY.forEach(function (r) {
+      if (r[0] < range.a || r[0] > range.b) return;
+      var name = CNAMES[r[1]];
+      if (isClean() && name === "Bratislava, SK") return;
+      var t = CSHIPS[r[1]] ? yes : no;
+      t.sessions += r[off]; t.cart += r[off + 1]; t.checkout += r[off + 2]; t.purchase += r[off + 3];
+    });
+    return { yes: yes, no: no };
+  }
+
   function drawShip() {
+    var sp = shipSplit(), all = t0();
+    document.getElementById("lg-ships").textContent = "Markets you serve · " + fmt(sp.yes.sessions) + " sessions";
+    document.getElementById("lg-noships").textContent = "Countries you can't ship to · " + fmt(sp.no.sessions) + " sessions";
     drawGrouped("ship-chart", "ship-tip", STEPS, [
-      { name: "Markets you serve", color: "--s1", values: stepValues(SHIPPABLE), raw: stepRaw(SHIPPABLE) },
-      { name: "Can't ship there", color: "--s2", values: stepValues(UNSHIPPABLE), raw: stepRaw(UNSHIPPABLE) }
+      { name: "Markets you serve", color: "--s1", values: stepValues(sp.yes), raw: stepRaw(sp.yes) },
+      { name: "Can't ship there", color: "--s2", values: stepValues(sp.no), raw: stepRaw(sp.no) }
     ]);
+
+    var tot = sp.yes.sessions + sp.no.sessions;
+    var us = null, biggestNo = null;
+    (function () {
+      var off = isClean() ? 6 : 2, acc = {};
+      CDAY.forEach(function (r) {
+        if (r[0] < range.a || r[0] > range.b) return;
+        var n = CNAMES[r[1]];
+        if (isClean() && n === "Bratislava, SK") return;
+        var t = acc[n] || (acc[n] = { k: n, ships: !!CSHIPS[r[1]], sessions: 0, cart: 0, checkout: 0, purchase: 0 });
+        t.sessions += r[off]; t.cart += r[off+1]; t.checkout += r[off+2]; t.purchase += r[off+3];
+      });
+      us = acc["United States"];
+      Object.keys(acc).forEach(function (k) {
+        var r = acc[k];
+        if (!r.ships && (!biggestNo || r.sessions > biggestNo.sessions)) biggestNo = r;
+      });
+    })();
+
+    document.getElementById("country-callouts").innerHTML =
+      '<div class="callout crit"><span class="ico">●</span><div>' +
+        "<h3>" + pct(sp.no.sessions, tot, 0) + " of your traffic goes to countries you don't sell to</h3>" +
+        "<p>Your live markets are <strong>Czechia, the EU and the United States</strong>. Everywhere else — " +
+        (biggestNo ? biggestNo.k + " leads with " + fmt(biggestNo.sessions) + " sessions, " : "") +
+        "then Canada, Australia, Switzerland, Norway and the rest — carries <strong>" + fmt(sp.no.sessions) +
+        " sessions, " + sp.no.cart + " cart adds and " + sp.no.checkout +
+        " checkouts</strong> that were never capable of becoming orders. Either open the markets or stop sending traffic there.</p></div></div>" +
+      (us ? '<div class="callout crit"><span class="ico">●</span><div>' +
+        "<h3>The US is the real anomaly</h3>" +
+        "<p>The US <em>is</em> an active market with Wasabi Logistics rates and a free-shipping option. In this window it takes <strong>" +
+        fmt(us.sessions) + " sessions</strong> — " + pct(us.sessions, sp.yes.sessions, 0) +
+        " of everything you can actually serve — and produces <strong>" + us.cart + " cart add" +
+        (us.cart === 1 ? "" : "s") + " and " + us.purchase + " order" + (us.purchase === 1 ? "" : "s") +
+        "</strong>. Across the whole month, 496 US sessions arrived with no referrer at all and another 115 came from ad-network and spam domains — so roughly 600 of them look non-human. The genuine US audience is the handful from Instagram and Linktree, and it is small.</p></div></div>" : "");
+
+    document.getElementById("daily-sub").textContent =
+      "Hover any day for its full funnel. Dots mark days with a tracked order." +
+      (function () {
+        var S = dailySeries(), peak = 0, pi = -1;
+        S.forEach(function (d, i) { if (d.s > peak) { peak = d.s; pi = i; } });
+        var total = S.reduce(function (a, d) { return a + d.s; }, 0);
+        return (pi >= 0 && total && peak / total > 0.15)
+          ? " The busiest day, " + prettyFull(S[pi].i) + ", alone carries " + pct(peak, total, 0) + " of the window."
+          : "";
+      })();
+
+    document.getElementById("ship-callouts").innerHTML =
+      '<div class="callout ' + (sp.yes.purchase ? "good" : "warn") + '"><span class="ico">' +
+        (sp.yes.purchase ? "✓" : "▲") + '</span><div>' +
+        "<h3>Checkout, among people you can actually serve</h3>" +
+        "<p>" + pct(sp.yes.purchase, sp.yes.checkout) + " of servable checkouts finish (" +
+        sp.yes.purchase + " of " + sp.yes.checkout + "), against " + pct(all.purchase, all.checkout) +
+        " store-wide. The " + sp.no.checkout + " checkout" + (sp.no.checkout === 1 ? "" : "s") +
+        " from unservable countries failed by definition — counting those as abandonment measures your own market settings, not your checkout.</p></div></div>" +
+      '<div class="callout crit"><span class="ico">●</span><div>' +
+        "<h3>" + pct(sp.no.sessions, tot, 0) + " of this traffic cannot buy at all</h3>" +
+        "<p>" + fmt(sp.no.sessions) + " sessions, " + sp.no.cart + " cart adds and " + sp.no.checkout +
+        " checkouts came from countries with no market — the UK, Canada, Australia, Switzerland, Norway and the rest. " +
+        "Your live markets are Czechia, the EU and the United States. Either open the markets or stop sending traffic there.</p></div></div>";
   }
 
   function drawDrops() {
@@ -2382,6 +2426,7 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
     paintKpis();
     srcTable.repaint();
     landTable.repaint();
+    refreshCountryRows();
     if (countryTable) countryTable.repaint();
     drawDaily(); drawDevice(); drawEntry(); drawShip();
     drawVFunnel(); drawFunnel(); drawDrops();
