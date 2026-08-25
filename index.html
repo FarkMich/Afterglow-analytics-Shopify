@@ -248,6 +248,91 @@ tbody tr.own td { background: var(--surface-2); }
 .tag.warn { color: var(--warning-ink);  border-color: var(--warning); }
 .tag.ok   { color: var(--good-ink);     border-color: var(--good); }
 
+/* ---------- date range picker ---------- */
+.rangewrap { position: relative; }
+.rangebtn {
+  appearance: none; cursor: pointer; display: inline-flex; align-items: center; gap: 9px;
+  font-family: "IBM Plex Mono", monospace; font-size: 12.5px;
+  padding: 6px 13px; border-radius: 8px;
+  border: 1px solid var(--hair); background: var(--surface); color: var(--ink);
+}
+.rangebtn:hover { border-color: var(--muted); }
+.rangebtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.rangebtn .cal-ico { font-size: 13px; opacity: .65; }
+.rangebtn .caret { color: var(--muted); font-size: 10px; }
+
+.cal {
+  position: absolute; z-index: 60; top: calc(100% + 8px); left: 0;
+  background: var(--surface); border: 1px solid var(--hair); border-radius: 12px;
+  box-shadow: var(--shadow); padding: 16px; display: none;
+  min-width: 300px;
+}
+.cal.open { display: block; }
+.cal-presets { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.cal-months { display: flex; gap: 22px; flex-wrap: wrap; }
+.cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.cal-nav button {
+  appearance: none; background: none; border: 1px solid var(--hair); border-radius: 6px;
+  color: var(--ink-2); cursor: pointer; width: 24px; height: 24px; line-height: 1; font-size: 13px;
+}
+.cal-nav button:hover:not(:disabled) { border-color: var(--muted); color: var(--ink); }
+.cal-nav button:disabled { opacity: .3; cursor: default; }
+.cal-title {
+  font-family: "Archivo", sans-serif; font-weight: 600; font-size: 13px; letter-spacing: -0.01em;
+}
+.cal-grid { display: grid; grid-template-columns: repeat(7, 30px); gap: 2px; }
+.cal-grid .dow {
+  font-family: "IBM Plex Mono", monospace; font-size: 9.5px; letter-spacing: .06em;
+  color: var(--muted); text-align: center; padding-bottom: 4px; text-transform: uppercase;
+}
+.cal-day {
+  appearance: none; border: 0; background: none; cursor: pointer;
+  font-family: "IBM Plex Mono", monospace; font-size: 11.5px;
+  height: 28px; border-radius: 6px; color: var(--ink-2);
+  display: flex; align-items: center; justify-content: center; position: relative;
+}
+.cal-day:hover:not(:disabled) { background: var(--surface-2); color: var(--ink); }
+.cal-day:disabled { color: var(--hair); cursor: default; }
+.cal-day.nodata:not(:disabled) { color: var(--muted); opacity: .5; }
+.cal-day.inrange { background: var(--accent-wash); color: var(--ink); border-radius: 0; }
+.cal-day.edge { background: var(--accent); color: #fff; border-radius: 6px; }
+.cal-day.blank { visibility: hidden; }
+.cal-foot {
+  margin-top: 13px; padding-top: 11px; border-top: 1px solid var(--hair);
+  font-size: 11.5px; color: var(--muted); display: flex; justify-content: space-between; gap: 12px;
+}
+
+.winbadge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: .06em;
+  text-transform: uppercase; padding: 2px 8px; border-radius: 4px;
+  border: 1px dashed var(--hair); color: var(--muted); white-space: nowrap;
+  vertical-align: middle; margin-left: 8px;
+}
+
+/* ---------- top-to-bottom funnel ---------- */
+.vfunnel-wrap { display: grid; grid-template-columns: 1fr 300px; gap: 26px; align-items: start; }
+@media (max-width: 780px) { .vfunnel-wrap { grid-template-columns: 1fr; } }
+.vf-legend {
+  font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--muted);
+  margin-top: 12px; line-height: 1.6;
+}
+.vf-steps { display: flex; flex-direction: column; gap: 10px; }
+.vf-step {
+  border: 1px solid var(--hair); border-radius: 9px; padding: 11px 13px; background: var(--surface-2);
+  border-left: 3px solid var(--f3);
+}
+.vf-step .n {
+  font-family: "Archivo", sans-serif; font-weight: 600; font-size: 20px;
+  letter-spacing: -0.02em; font-variant-numeric: tabular-nums;
+}
+.vf-step .lab { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+.vf-step .sub { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--muted); margin: 0; }
+.vf-leak {
+  font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--critical-ink);
+  padding-left: 14px;
+}
+
 .funnel { display: flex; flex-direction: column; }
 .stage { display: grid; grid-template-columns: 178px 1fr 248px; gap: 18px; align-items: center; padding: 15px 0; }
 .stage-name { font-weight: 600; font-size: 14px; }
@@ -327,13 +412,37 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
     <p class="eyebrow">Afterglow Supplements · feelafterglow.com</p>
     <h1>Traffic, Behaviour &amp; Funnel</h1>
     <div class="mast-meta">
-      <span class="chip">25 Jul – 24 Aug 2026 · 30 days</span>
+      <span class="chip" id="chip-range">25 Jul – 24 Aug 2026 · 30 days</span>
       <span class="chip"><span class="dot ok"></span>Shopify Analytics · live</span>
       <span class="chip"><span class="dot ok"></span>GA4 · read 24 Aug</span>
       <span class="chip"><span class="dot ok"></span>Clarity · read 24 Aug</span>
     </div>
 
     <div class="filters" style="margin-top:20px;margin-bottom:0">
+      <div class="fgroup rangewrap">
+        <span class="flab">Dates</span>
+        <button class="rangebtn" id="range-btn" aria-haspopup="dialog" aria-expanded="false">
+          <span class="cal-ico">▦</span><span id="range-label">25 Jul – 24 Aug 2026</span><span class="caret">▾</span>
+        </button>
+        <div class="cal" id="cal" role="dialog" aria-label="Choose a date range">
+          <div class="cal-presets">
+            <button class="opt" data-preset="7">Last 7 days</button>
+            <button class="opt" data-preset="30" aria-pressed="true">Last 30 days</button>
+            <button class="opt" data-preset="60">Last 60 days</button>
+            <button class="opt" data-preset="all">All data</button>
+          </div>
+          <div class="cal-nav">
+            <button id="cal-prev" aria-label="Previous month">‹</button>
+            <span class="cal-title" id="cal-title"></span>
+            <button id="cal-next" aria-label="Next month">›</button>
+          </div>
+          <div class="cal-months" id="cal-months"></div>
+          <div class="cal-foot">
+            <span id="cal-hint">Click a start date, then an end date</span>
+            <span id="cal-count"></span>
+          </div>
+        </div>
+      </div>
       <div class="fgroup">
         <span class="flab">View</span>
         <button class="opt" data-view="clean" aria-pressed="true">Cleaned</button>
@@ -383,7 +492,7 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
   <div class="panel on" id="p-acq" role="tabpanel" aria-labelledby="tb-acq">
 
     <section>
-      <h2>What actually produced the nine orders</h2>
+      <h2>What actually produced the nine orders<span class="winbadge">fixed window · 25 Jul – 24 Aug</span></h2>
       <p class="sub">Shopify records a visit trail on each order. This is the only attribution on the page that is order-level rather than session-level — and it disagrees with the session tables below.</p>
       <div class="tw">
         <table>
@@ -447,7 +556,7 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
     </section>
 
     <section>
-      <h2>Referring site</h2>
+      <h2>Referring site<span class="winbadge">fixed window · 25 Jul – 24 Aug</span></h2>
       <p class="sub">The named referrers behind those sources, as Shopify reports them. Ten of the top twenty are sites with no plausible relationship to the store.</p>
       <div class="filters">
         <div class="fgroup">
@@ -482,7 +591,7 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
     </section>
 
     <section>
-      <h2>Country — and whether you can ship there</h2>
+      <h2>Country — and whether you can ship there<span class="winbadge">fixed window · 25 Jul – 24 Aug</span></h2>
       <p class="sub">Traffic by the country the browser was in, checked against your live Shopify markets and delivery zones. Your Bratislava sessions sit on their own line. Where the <em>orders</em> went is a different table — it's on the "What to trust" tab, and it does not look like this one.</p>
       <div class="filters">
         <div class="fgroup">
@@ -531,7 +640,7 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
   <div class="panel" id="p-site" role="tabpanel" aria-labelledby="tb-site">
 
     <section>
-      <h2>Where the session starts</h2>
+      <h2>Where the session starts<span class="winbadge">fixed window · 25 Jul – 24 Aug</span></h2>
       <p class="sub">Landing path with its own funnel attached. Two pages take 92% of all traffic and behave nothing like each other.</p>
       <div class="tw">
         <table id="tbl-land">
@@ -551,7 +660,7 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
     </section>
 
     <section>
-      <h2>Product page first vs. homepage first</h2>
+      <h2>Product page first vs. homepage first<span class="winbadge">fixed window · 25 Jul – 24 Aug</span></h2>
       <p class="sub">Same store, same month. The difference is which door people walk through.</p>
       <div class="card chart-host">
         <div id="entry-chart"></div>
@@ -587,8 +696,8 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
   <div class="panel" id="p-fun" role="tabpanel" aria-labelledby="tb-fun">
 
     <section>
-      <h2>The drop-off</h2>
-      <p class="sub">Each bar is the share of the previous step that survived — the bar length is a conversion rate, not a distorted count. Absolute numbers sit on the right. Pick a source and a device to recut it.</p>
+      <h2>The way through, top to bottom</h2>
+      <p class="sub">Every visitor enters at the top. The funnel narrows at each step, and what leaves is shown beside it. Pick a source and a device to recut it — and use the date picker in the header to change the window.</p>
 
       <div class="filters">
         <div class="fgroup">
@@ -610,6 +719,21 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
         </div>
       </div>
 
+      <div class="card" style="margin-bottom:16px">
+        <div class="vfunnel-wrap">
+          <div class="chart-host">
+            <div id="vfunnel"></div>
+            <div class="tip" id="vfunnel-tip"></div>
+            <p class="vf-legend" id="vf-legend"></p>
+          </div>
+          <div>
+            <div class="vf-steps" id="vf-steps"></div>
+          </div>
+        </div>
+      </div>
+
+      <h2 style="margin-top:30px">Step by step, to scale</h2>
+      <p class="sub">The same four steps as exact conversion rates. Each bar is the share of the previous step that survived, so bar length is a rate and nothing is compressed.</p>
       <div class="card">
         <div class="funnel" id="funnel"></div>
       </div>
@@ -630,7 +754,7 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
     </section>
 
     <section>
-      <h2>People who could actually buy</h2>
+      <h2>People who could actually buy<span class="winbadge">fixed window · 25 Jul – 24 Aug</span></h2>
       <p class="sub">The same cleaned month, split by whether the store ships to the visitor's country. This is the split that explains most of the checkout drop.</p>
       <div class="card chart-host">
         <div id="ship-chart"></div>
@@ -670,7 +794,7 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
   <div class="panel" id="p-beh" role="tabpanel" aria-labelledby="tb-beh">
 
     <section>
-      <h2>Why four orders had no session behind them</h2>
+      <h2>Why four orders had no session behind them<span class="winbadge">snapshot · 24 Aug</span></h2>
       <p class="sub">This was the open question. Clarity's click map of the product page answers it.</p>
       <div class="grid2">
         <div class="card chart-host">
@@ -701,7 +825,7 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
     </section>
 
     <section>
-      <h2>How far down the product page anyone gets</h2>
+      <h2>How far down the product page anyone gets<span class="winbadge">Clarity · last 30 days at 24 Aug</span></h2>
       <p class="sub">Clarity scroll map, 1,826 product-page views, last 30 days. The line is the share of visitors who reached each depth.</p>
       <div class="card chart-host">
         <div id="scroll-chart"></div>
@@ -728,7 +852,7 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
     </section>
 
     <section>
-      <h2>The GA4 funnel, for comparison</h2>
+      <h2>The GA4 funnel, for comparison<span class="winbadge">GA4 · 27 Jul – 23 Aug</span></h2>
       <p class="sub">GA4's purchase journey counts <em>users</em>, not sessions, and only those who consented. Window is GA4's own last-28-days (27 Jul – 23 Aug), so it does not line up exactly with the Shopify figures.</p>
       <div class="tw">
         <table>
@@ -762,7 +886,7 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
     </section>
 
     <section>
-      <h2>Clarity behaviour signals</h2>
+      <h2>Clarity behaviour signals<span class="winbadge">Clarity · last 30 days at 24 Aug</span></h2>
       <p class="sub">Last 30 days, 2,942 sessions after Clarity removed 633 bots.</p>
       <div class="tiles" style="margin-top:0">
         <div class="tile"><span class="lab">Scroll depth</span><div class="val">30.6%</div><span class="note">average, all pages</span></div>
@@ -827,7 +951,7 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
   <div class="panel" id="p-dq" role="tabpanel" aria-labelledby="tb-dq">
 
     <section>
-      <h2>How your own testing was found and removed</h2>
+      <h2>How your own testing was found and removed<span class="winbadge">fixed window · 25 Jul – 24 Aug</span></h2>
       <p class="sub">You asked whether your cart adds and checkouts were still counted. They were. Here is what they turned out to be.</p>
       <div class="tw">
         <table>
@@ -870,7 +994,7 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
     </section>
 
     <section>
-      <h2>The order ledger</h2>
+      <h2>The order ledger<span class="winbadge">fixed window · 25 Jul – 24 Aug</span></h2>
       <p class="sub">Every order Shopify recorded in the window, in three classes.</p>
       <div class="tw">
         <table>
@@ -891,7 +1015,7 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
     </section>
 
     <section>
-      <h2>Where the orders actually went</h2>
+      <h2>Where the orders actually went<span class="winbadge">fixed window · 25 Jul – 24 Aug</span></h2>
       <p class="sub">This is the table that disagrees with the session-country table on tab 01, and it is the one to trust for market decisions.</p>
       <div class="grid2">
         <div>
@@ -932,7 +1056,7 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
     </section>
 
     <section>
-      <h2>Traffic that probably isn't customers</h2>
+      <h2>Traffic that probably isn't customers<span class="winbadge">fixed window · 25 Jul – 24 Aug</span></h2>
       <div class="tw">
         <table id="tbl-junk">
           <thead>
@@ -1045,42 +1169,15 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
 
   /* ================= data ================= */
 
-  // src, dev, [sessions, cart, checkout, purchase] raw, then cleaned (Bratislava removed)
-  var CUBE = [
-    { src:"direct",  dev:"mobile",  raw:[821,14,10,1], cl:[803,10,8,0] },
-    { src:"unknown", dev:"mobile",  raw:[718,10,4,1],  cl:[716,10,4,1] },
-    { src:"social",  dev:"mobile",  raw:[515,9,5,1],   cl:[513,9,5,1] },
-    { src:"direct",  dev:"desktop", raw:[453,22,19,3], cl:[383,0,0,0] },
-    { src:"search",  dev:"mobile",  raw:[82,6,4,2],    cl:[80,6,4,2] },
-    { src:"search",  dev:"desktop", raw:[72,0,0,0],    cl:[72,0,0,0] },
-    { src:"unknown", dev:"desktop", raw:[14,0,0,0],    cl:[7,0,0,0] },
-    { src:"paid",    dev:"mobile",  raw:[13,0,0,0],    cl:[13,0,0,0] },
-    { src:"social",  dev:"desktop", raw:[12,1,1,1],    cl:[10,0,0,0] },
-    { src:"unknown", dev:"tablet",  raw:[11,0,0,0],    cl:[11,0,0,0] },
-    { src:"email",   dev:"mobile",  raw:[2,0,0,0],     cl:[2,0,0,0] },
-    { src:"social",  dev:"other",   raw:[1,0,0,0],     cl:[1,0,0,0] },
-    { src:"paid",    dev:"desktop", raw:[1,0,0,0],     cl:[1,0,0,0] }
-  ];
+  // Day-grain cube: [dayIdx, srcIdx, devIdx, sessions,cart,checkout,orders (raw), then the same cleaned]
+  var DAY0="2026-06-15",DAYN=72;
+  var SRCK=["direct", "unknown", "social", "search", "paid", "email"],DEVK=["mobile", "desktop", "tablet", "other"];
+  var DAYCUBE=[[0,0,1,2,0,0,0,2,0,0,0],[14,3,1,1,0,0,0,1,0,0,0],[18,0,1,2,0,0,0,2,0,0,0],[21,0,1,2,0,0,0,2,0,0,0],[23,0,1,60,2,0,0,60,2,0,0],[24,0,1,25,0,0,0,25,0,0,0],[24,0,0,1,0,0,0,1,0,0,0],[25,0,1,7,0,0,0,7,0,0,0],[25,0,0,1,0,0,0,0,0,0,0],[28,0,1,9,0,0,0,9,0,0,0],[29,0,1,25,0,0,0,25,0,0,0],[31,0,1,3,0,0,0,3,0,0,0],[34,0,1,3,0,0,0,3,0,0,0],[35,0,1,5,0,0,0,5,0,0,0],[35,1,1,1,0,0,0,1,0,0,0],[36,0,1,4,0,0,0,4,0,0,0],[37,0,1,1,0,0,0,1,0,0,0],[38,0,1,3,0,0,0,3,0,0,0],[39,0,1,6,0,0,0,6,0,0,0],[40,0,1,6,0,0,0,6,0,0,0],[41,0,1,6,0,0,0,6,0,0,0],[42,0,1,4,0,0,0,4,0,0,0],[43,0,1,3,0,0,0,3,0,0,0],[44,0,0,1,0,0,0,1,0,0,0],[45,0,1,7,1,1,0,6,0,0,0],[45,3,1,2,0,0,0,2,0,0,0],[46,0,1,12,0,0,0,12,0,0,0],[46,0,0,1,0,0,0,1,0,0,0],[48,0,1,9,0,0,0,9,0,0,0],[48,3,1,1,0,0,0,1,0,0,0],[49,0,1,22,0,0,0,21,0,0,0],[50,0,1,14,2,2,1,12,0,0,0],[50,0,0,6,1,0,0,1,1,0,0],[50,3,1,4,0,0,0,4,0,0,0],[51,0,1,14,6,6,0,2,0,0,0],[51,0,0,7,1,0,0,4,0,0,0],[51,5,0,1,0,0,0,1,0,0,0],[51,3,1,5,0,0,0,5,0,0,0],[51,3,0,3,0,0,0,3,0,0,0],[51,2,0,1,0,0,0,1,0,0,0],[52,0,1,28,5,3,0,19,0,0,0],[52,0,0,6,1,0,1,4,0,0,0],[52,3,1,9,0,0,0,9,0,0,0],[52,3,0,4,0,0,0,4,0,0,0],[52,2,0,6,1,0,0,6,1,0,0],[52,1,0,3,0,0,0,3,0,0,0],[53,0,1,16,0,0,0,13,0,0,0],[53,0,0,10,0,0,0,8,0,0,0],[53,3,1,6,0,0,0,6,0,0,0],[53,3,0,7,0,0,0,6,0,0,0],[53,2,0,9,2,2,0,7,2,2,0],[54,0,1,2,0,0,0,2,0,0,0],[54,0,0,3,0,0,0,3,0,0,0],[54,3,1,3,0,0,0,3,0,0,0],[54,3,0,7,1,1,1,6,1,1,1],[54,2,1,1,0,0,0,1,0,0,0],[54,2,0,18,0,0,0,18,0,0,0],[54,1,1,1,0,0,0,1,0,0,0],[55,0,1,10,0,0,0,9,0,0,0],[55,0,0,11,0,0,0,11,0,0,0],[55,3,1,3,0,0,0,3,0,0,0],[55,2,1,1,0,0,0,1,0,0,0],[55,2,0,3,0,0,0,3,0,0,0],[55,1,1,1,0,0,0,1,0,0,0],[56,0,1,67,2,2,0,59,0,0,0],[56,0,0,115,1,1,0,113,1,1,0],[56,4,0,2,0,0,0,2,0,0,0],[56,3,1,3,0,0,0,3,0,0,0],[56,3,0,10,0,0,0,10,0,0,0],[56,2,1,1,0,0,0,1,0,0,0],[56,2,0,66,0,0,0,66,0,0,0],[56,1,0,173,0,0,0,173,0,0,0],[57,0,1,13,0,0,0,12,0,0,0],[57,0,0,274,4,2,0,273,3,1,0],[57,4,0,9,0,0,0,9,0,0,0],[57,3,1,2,0,0,0,2,0,0,0],[57,3,0,9,2,0,0,9,2,0,0],[57,2,1,1,0,0,0,1,0,0,0],[57,2,0,42,1,0,0,42,1,0,0],[57,1,1,3,0,0,0,3,0,0,0],[57,1,0,284,3,1,0,283,3,1,0],[58,0,1,7,0,0,0,5,0,0,0],[58,0,0,57,1,1,0,57,1,1,0],[58,3,0,6,0,0,0,6,0,0,0],[58,2,0,41,2,1,0,41,2,1,0],[58,1,0,19,1,0,0,19,1,0,0],[59,0,1,15,0,0,0,13,0,0,0],[59,0,0,36,1,2,0,36,1,2,0],[59,3,1,3,0,0,0,3,0,0,0],[59,3,0,7,0,0,0,7,0,0,0],[59,2,1,2,0,0,0,2,0,0,0],[59,2,0,4,0,0,0,4,0,0,0],[59,1,0,9,1,1,0,9,1,1,0],[60,0,1,37,2,2,2,33,0,0,0],[60,0,0,28,0,1,0,28,0,1,0],[60,3,0,2,0,0,0,2,0,0,0],[60,2,0,6,0,0,0,6,0,0,0],[60,1,1,1,0,0,0,0,0,0,0],[60,1,0,10,1,1,0,10,1,1,0],[61,0,1,6,0,0,0,6,0,0,0],[61,0,0,19,0,0,0,19,0,0,0],[61,3,1,3,0,0,0,3,0,0,0],[61,3,0,2,0,0,0,2,0,0,0],[61,2,0,4,0,0,0,4,0,0,0],[61,1,0,6,0,0,0,6,0,0,0],[62,0,1,15,0,0,0,14,0,0,0],[62,0,0,20,0,0,0,20,0,0,0],[62,3,1,1,0,0,0,1,0,0,0],[62,3,0,1,0,0,0,1,0,0,0],[62,2,0,9,0,0,0,9,0,0,0],[62,2,3,1,0,0,0,1,0,0,0],[62,1,0,6,0,0,0,6,0,0,0],[63,0,1,28,0,0,0,25,0,0,0],[63,0,0,25,0,0,0,25,0,0,0],[63,3,1,2,0,0,0,2,0,0,0],[63,3,0,5,1,1,1,5,1,1,1],[63,2,1,3,0,0,0,3,0,0,0],[63,2,0,43,0,0,0,43,0,0,0],[63,1,1,4,0,0,0,2,0,0,0],[63,1,0,15,0,0,0,14,0,0,0],[64,0,1,19,2,2,0,15,0,0,0],[64,0,0,26,1,0,0,25,1,0,0],[64,5,0,1,0,0,0,1,0,0,0],[64,3,1,2,0,0,0,2,0,0,0],[64,3,0,4,0,0,0,4,0,0,0],[64,2,1,1,0,0,0,1,0,0,0],[64,2,0,7,0,0,0,7,0,0,0],[64,1,0,15,0,0,0,15,0,0,0],[64,1,2,1,0,0,0,1,0,0,0],[65,0,1,19,0,0,0,16,0,0,0],[65,0,0,40,0,0,0,39,0,0,0],[65,4,1,1,0,0,0,1,0,0,0],[65,4,0,1,0,0,0,1,0,0,0],[65,3,1,4,0,0,0,4,0,0,0],[65,3,0,2,0,0,0,2,0,0,0],[65,2,0,19,0,0,0,19,0,0,0],[65,1,0,31,0,0,0,31,0,0,0],[65,1,2,3,0,0,0,3,0,0,0],[66,0,1,21,0,0,0,18,0,0,0],[66,0,0,44,2,2,0,44,2,2,0],[66,4,0,1,0,0,0,1,0,0,0],[66,3,1,8,0,0,0,8,0,0,0],[66,3,0,2,0,0,0,2,0,0,0],[66,2,0,115,2,1,0,115,2,1,0],[66,1,1,2,0,0,0,2,0,0,0],[66,1,0,49,2,1,0,49,2,1,0],[66,1,2,5,0,0,0,5,0,0,0],[67,0,1,18,1,0,0,16,0,0,0],[67,0,0,26,1,1,0,25,0,0,0],[67,3,1,2,0,0,0,2,0,0,0],[67,3,0,4,0,0,0,4,0,0,0],[67,2,0,85,1,1,1,85,1,1,1],[67,1,1,1,0,0,0,1,0,0,0],[67,1,0,25,1,0,1,25,1,0,1],[67,1,2,2,0,0,0,2,0,0,0],[68,0,1,4,1,1,0,2,0,0,0],[68,0,0,22,0,0,0,22,0,0,0],[68,3,1,2,0,0,0,2,0,0,0],[68,3,0,4,0,0,0,4,0,0,0],[68,2,1,1,1,1,1,0,0,0,0],[68,2,0,13,0,0,0,13,0,0,0],[68,1,0,22,0,0,0,22,0,0,0],[69,0,1,12,0,0,0,10,0,0,0],[69,0,0,24,0,0,0,24,0,0,0],[69,3,1,5,0,0,0,5,0,0,0],[69,3,0,2,1,1,0,2,1,1,0],[69,2,0,11,0,0,0,11,0,0,0],[69,1,0,24,0,0,0,24,0,0,0],[70,0,1,38,0,0,0,33,0,0,0],[70,0,0,40,2,1,0,40,2,1,0],[70,5,0,2,1,1,0,2,1,1,0],[70,3,1,5,0,0,0,5,0,0,0],[70,3,0,4,1,1,0,4,1,1,0],[70,2,1,2,0,0,0,2,0,0,0],[70,2,0,46,0,0,0,46,0,0,0],[70,2,2,1,0,0,0,1,0,0,0],[70,1,1,1,0,0,0,1,0,0,0],[70,1,0,47,2,1,0,47,2,1,0],[70,1,2,1,0,0,0,1,0,0,0],[71,0,1,4,0,0,0,4,0,0,0],[71,0,0,22,1,1,0,22,1,1,0],[71,3,1,2,0,0,0,2,0,0,0],[71,3,0,3,0,0,0,3,0,0,0],[71,2,1,1,0,1,0,1,0,1,0],[71,2,0,19,2,1,0,19,2,1,0],[71,1,0,10,0,0,0,10,0,0,0]];
 
   var SRC_LABEL = {
     direct:"Direct / typed-in", unknown:"Unknown (referrer stripped)", social:"Social",
     search:"Organic search", paid:"Paid", email:"Email"
   };
-
-  // date, sessions, cart, checkout, tracked orders (raw), tracked orders (cleaned)
-  var DAILY = [
-    ["2026-07-25",6,0,0,0,0],   ["2026-07-26",6,0,0,0,0],   ["2026-07-27",4,0,0,0,0],
-    ["2026-07-28",3,0,0,0,0],   ["2026-07-29",1,0,0,0,0],   ["2026-07-30",9,1,1,0,0],
-    ["2026-07-31",13,0,0,0,0],  ["2026-08-01",0,0,0,0,0],   ["2026-08-02",10,0,0,0,0],
-    ["2026-08-03",22,0,0,0,0],  ["2026-08-04",24,3,2,1,0],  ["2026-08-05",31,7,6,0,0],
-    ["2026-08-06",56,7,3,1,0],  ["2026-08-07",48,2,2,0,0],  ["2026-08-08",35,1,1,1,1],
-    ["2026-08-09",29,0,0,0,0],  ["2026-08-10",437,3,3,0,0], ["2026-08-11",637,10,3,0,0],
-    ["2026-08-12",130,4,2,0,0], ["2026-08-13",76,2,3,0,0],  ["2026-08-14",84,3,4,2,0],
-    ["2026-08-15",40,0,0,0,0],  ["2026-08-16",53,0,0,0,0],  ["2026-08-17",125,1,1,1,1],
-    ["2026-08-18",76,3,2,0,0],  ["2026-08-19",120,0,0,0,0], ["2026-08-20",247,6,4,0,0],
-    ["2026-08-21",163,4,2,2,2], ["2026-08-22",68,2,2,1,0],  ["2026-08-23",78,1,1,0,0],
-    ["2026-08-24",82,2,1,0,0]
-  ];
 
   // name, date (CEST), customer, ship-to, total, class: real | own | import
   var ORDERS = [
@@ -1315,7 +1412,7 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
   /* ================= view toggle ================= */
 
   var VIEW_NOTE = {
-    clean: "Your 103 Bratislava sessions, your 13 test orders and 2 Matrixify imports are out. This is the store as an outside customer experiences it.",
+    clean: "Bratislava sessions, your test orders and the Matrixify imports are out — the store as an outside customer experiences it. Counted at day grain, so a session spanning midnight lands in both days; totals run a few percent above a single whole-window query.",
     raw:   "Everything Shopify reports, including your own testing and the imported orders. Useful for reconciling against the Shopify admin, misleading for decisions."
   };
 
@@ -1340,23 +1437,55 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
     document.getElementById("k-chk-n").textContent = pct(t.checkout, t.cart) + " of carts";
     document.getElementById("k-trk").textContent = t.purchase;
     document.getElementById("k-trk-n").innerHTML = "<b>" + pct(t.purchase, t.checkout) + "</b> of checkouts";
-    document.getElementById("k-ord").textContent = isClean() ? "9" : "24";
-    document.getElementById("k-ord-n").innerHTML = isClean()
-      ? '€544 · AOV <b class="up">€60.46</b>'
-      : '€775 · AOV <b>€26.26</b>';
+    var defaultWindow = (range.a === 40 && range.b === 70);
+    document.getElementById("k-ord").textContent = defaultWindow ? (isClean() ? "9" : "24") : "—";
+    document.getElementById("k-ord-n").innerHTML = defaultWindow
+      ? (isClean() ? '€544 · AOV <b class="up">€60.46</b>' : '€775 · AOV <b>€26.26</b>')
+      : '<span style="color:var(--muted)">ledger covers 25 Jul – 24 Aug only</span>';
   }
 
   /* ================= aggregation ================= */
 
-  function agg(srcF, devF) {
+  /* ---- date range over the day cube ---- */
+
+  var DAY0D = new Date(DAY0 + "T00:00:00Z");
+  var dayDate = function (i) { return new Date(DAY0D.getTime() + i * 86400000); };
+  var dayISO  = function (i) { return dayDate(i).toISOString().slice(0, 10); };
+  var MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  var pretty = function (i) { var d = dayDate(i); return d.getUTCDate() + " " + MON[d.getUTCMonth()]; };
+  var prettyFull = function (i) { var d = dayDate(i); return d.getUTCDate() + " " + MON[d.getUTCMonth()] + " " + d.getUTCFullYear(); };
+
+  // default: 25 Jul – 24 Aug 2026, the window the fixed-window tables describe
+  var range = { a: 40, b: 70 };
+
+  function agg(srcF, devF, forceView) {
     var t = { sessions: 0, cart: 0, checkout: 0, purchase: 0 };
-    CUBE.forEach(function (r) {
-      if (srcF !== "all" && r.src !== srcF) return;
-      if (devF !== "all" && r.dev !== devF) return;
-      var v = isClean() ? r.cl : r.raw;
-      t.sessions += v[0]; t.cart += v[1]; t.checkout += v[2]; t.purchase += v[3];
-    });
+    var v = forceView || view;
+    var off = (v === "clean") ? 7 : 3;
+    var si = srcF === "all" ? -1 : SRCK.indexOf(srcF);
+    var vi = devF === "all" ? -1 : DEVK.indexOf(devF);
+    for (var k = 0; k < DAYCUBE.length; k++) {
+      var r = DAYCUBE[k];
+      if (r[0] < range.a || r[0] > range.b) continue;
+      if (si >= 0 && r[1] !== si) continue;
+      if (vi >= 0 && r[2] !== vi) continue;
+      t.sessions += r[off]; t.cart += r[off + 1]; t.checkout += r[off + 2]; t.purchase += r[off + 3];
+    }
     return t;
+  }
+
+  // per-day totals across the active range, for the time series
+  function dailySeries() {
+    var off = isClean() ? 7 : 3, out = [];
+    for (var i = range.a; i <= range.b; i++) out.push({ i: i, s: 0, c: 0, k: 0, p: 0, own: 0 });
+    for (var n = 0; n < DAYCUBE.length; n++) {
+      var r = DAYCUBE[n];
+      if (r[0] < range.a || r[0] > range.b) continue;
+      var o = out[r[0] - range.a];
+      o.s += r[off]; o.c += r[off + 1]; o.k += r[off + 2]; o.p += r[off + 3];
+      o.own += r[3 + 3] - r[7 + 3];
+    }
+    return out;
   }
 
   function deviceTotals(dev) { return agg("all", dev); }
@@ -1559,6 +1688,7 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
     [].slice.call(document.querySelectorAll(".opt[data-" + dim + "]")).forEach(function (b) {
       b.setAttribute("aria-pressed", b.dataset[dim] === val ? "true" : "false");
     });
+    drawVFunnel();
     drawFunnel();
   }
 
@@ -1611,10 +1741,251 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
 
     var foot = el("p", "");
     foot.style.cssText = "margin:16px 0 0;font-size:12.5px;color:var(--ink-2);border-top:1px solid var(--hair);padding-top:13px";
+    var rawT = agg(filter.src, filter.dev, "raw");
+    var clT  = agg(filter.src, filter.dev, "clean");
+    var dS = rawT.sessions - clT.sessions, dC = rawT.cart - clT.cart, dK = rawT.checkout - clT.checkout;
     foot.innerHTML = isClean()
-      ? "Cleaned view — your 103 Bratislava sessions are removed at every step, including their 27 cart adds and 22 checkouts. One genuine Bratislava customer (order #1199) goes with them, so the last step reads one lower than the true tracked count."
-      : "Raw view — your own testing is still in every step. Bratislava alone contributes 27 of these 62 cart adds and 22 of the 43 checkouts.";
+      ? "Cleaned view — every Bratislava session is removed at every step. In this window that is " +
+        fmt(dS) + " sessions, " + dC + " cart adds and " + dK +
+        " checkouts of your own testing taken out. One genuine Bratislava customer (order #1199) goes with them, so the last step can read one lower than the true tracked count."
+      : "Raw view — your own testing is still in every step. Bratislava contributes " + dC +
+        " of these " + rawT.cart + " cart adds and " + dK + " of the " + rawT.checkout + " checkouts.";
     host.appendChild(foot);
+  }
+
+  /* ================= date range picker ================= */
+
+  (function () {
+    var btn = document.getElementById("range-btn");
+    var cal = document.getElementById("cal");
+    var monthsHost = document.getElementById("cal-months");
+    var title = document.getElementById("cal-title");
+    var prev = document.getElementById("cal-prev");
+    var next = document.getElementById("cal-next");
+    var hint = document.getElementById("cal-hint");
+    var count = document.getElementById("cal-count");
+
+    // which days actually carry sessions, for the "no data" styling
+    var hasData = {};
+    DAYCUBE.forEach(function (r) { if (r[3] > 0) hasData[r[0]] = true; });
+
+    var firstD = dayDate(0), lastD = dayDate(DAYN - 1);
+    var viewY = lastD.getUTCFullYear(), viewM = lastD.getUTCMonth();
+    var picking = null; // null = idle, number = start chosen, waiting for end
+
+    function idxOf(y, m, d) {
+      var t = Date.UTC(y, m, d);
+      var i = Math.round((t - DAY0D.getTime()) / 86400000);
+      return (i >= 0 && i < DAYN) ? i : -1;
+    }
+
+    function monthEl(y, m) {
+      var wrap = el("div");
+      var g = el("div", "cal-grid");
+      ["Mo","Tu","We","Th","Fr","Sa","Su"].forEach(function (d) {
+        g.appendChild(el("div", "dow", d));
+      });
+      var first = new Date(Date.UTC(y, m, 1));
+      var lead = (first.getUTCDay() + 6) % 7;
+      for (var b = 0; b < lead; b++) g.appendChild(el("div", "cal-day blank", ""));
+      var dim = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
+      for (var d = 1; d <= dim; d++) {
+        (function (d) {
+          var i = idxOf(y, m, d);
+          var cell = el("button", "cal-day", String(d));
+          if (i < 0) { cell.disabled = true; }
+          else {
+            if (!hasData[i]) cell.className += " nodata";
+            var lo = picking === null ? range.a : Math.min(picking, picking);
+            if (picking === null) {
+              if (i === range.a || i === range.b) cell.className += " edge";
+              else if (i > range.a && i < range.b) cell.className += " inrange";
+            } else if (i === picking) cell.className += " edge";
+            cell.title = prettyFull(i) + (hasData[i] ? "" : " — no sessions");
+            cell.addEventListener("click", function () {
+              if (picking === null) {
+                picking = i;
+                hint.textContent = "Now pick the end date";
+                draw();
+              } else {
+                range.a = Math.min(picking, i);
+                range.b = Math.max(picking, i);
+                picking = null;
+                hint.textContent = "Click a start date, then an end date";
+                setPreset(null);
+                close();
+                render();
+              }
+            });
+          }
+          g.appendChild(cell);
+        })(d);
+      }
+      wrap.appendChild(g);
+      return wrap;
+    }
+
+    function draw() {
+      monthsHost.innerHTML = "";
+      monthsHost.appendChild(monthEl(viewY, viewM));
+      title.textContent = MON[viewM] + " " + viewY;
+      var atStart = (viewY === firstD.getUTCFullYear() && viewM === firstD.getUTCMonth());
+      var atEnd = (viewY === lastD.getUTCFullYear() && viewM === lastD.getUTCMonth());
+      prev.disabled = atStart; next.disabled = atEnd;
+      count.textContent = (range.b - range.a + 1) + " days selected";
+    }
+
+    function setPreset(p) {
+      [].slice.call(cal.querySelectorAll("[data-preset]")).forEach(function (o) {
+        o.setAttribute("aria-pressed", o.dataset.preset === p ? "true" : "false");
+      });
+    }
+
+    function open() { cal.classList.add("open"); btn.setAttribute("aria-expanded", "true"); draw(); }
+    function close() { cal.classList.remove("open"); btn.setAttribute("aria-expanded", "false"); picking = null; }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      cal.classList.contains("open") ? close() : open();
+    });
+    cal.addEventListener("click", function (e) { e.stopPropagation(); });
+    document.addEventListener("click", function () { if (cal.classList.contains("open")) close(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
+
+    prev.addEventListener("click", function () {
+      viewM--; if (viewM < 0) { viewM = 11; viewY--; } draw();
+    });
+    next.addEventListener("click", function () {
+      viewM++; if (viewM > 11) { viewM = 0; viewY++; } draw();
+    });
+
+    [].slice.call(cal.querySelectorAll("[data-preset]")).forEach(function (b) {
+      b.addEventListener("click", function () {
+        var p = b.dataset.preset;
+        if (p === "all") { range.a = 0; range.b = DAYN - 1; }
+        else { range.b = DAYN - 1; range.a = Math.max(0, DAYN - parseInt(p, 10)); }
+        setPreset(p);
+        picking = null;
+        close();
+        render();
+      });
+    });
+
+    window.__calDraw = draw;
+  })();
+
+  function paintRangeLabels() {
+    var n = range.b - range.a + 1;
+    document.getElementById("range-label").textContent = pretty(range.a) + " – " + prettyFull(range.b);
+    document.getElementById("chip-range").textContent =
+      pretty(range.a) + " – " + prettyFull(range.b) + " · " + n + " day" + (n === 1 ? "" : "s");
+    if (window.__calDraw) window.__calDraw();
+  }
+
+  /* ================= top-to-bottom funnel ================= */
+
+  function drawVFunnel() {
+    var t = agg(filter.src, filter.dev);
+    var host = document.getElementById("vfunnel");
+    var tip = document.getElementById("vfunnel-tip");
+    host.innerHTML = "";
+
+    var stages = [
+      { name: "Sessions",         note: "arrived on the store", v: t.sessions, color: "--f1" },
+      { name: "Added to cart",    note: "picked the product",   v: t.cart,     color: "--f2" },
+      { name: "Reached checkout", note: "started paying",       v: t.checkout, color: "--f3" },
+      { name: "Completed order",  note: "paid",                 v: t.purchase, color: "--f4" }
+    ];
+
+    var W = host.clientWidth || 520, bandH = 76, padT = 14, padB = 18;
+    var H = padT + bandH * 4 + padB;
+    var maxW = Math.min(W * 0.46, 250);
+    var cx = W * 0.5;
+    var top = stages[0].v;
+
+    function halfW(v) {
+      if (!top || v <= 0) return 0;
+      return Math.max(Math.sqrt(v / top) * maxW, 4) / 2;
+    }
+
+    var svg = mk("svg", { viewBox: "0 0 " + W + " " + H, role: "img",
+      "aria-label": "Funnel from sessions to completed orders" });
+
+    stages.forEach(function (s, i) {
+      var y0 = padT + i * bandH, y1 = y0 + bandH - 6;
+      var w0 = halfW(s.v);
+      var w1 = i < 3 ? halfW(stages[i + 1].v) : w0;
+      if (w0 <= 0) return;
+
+      var d = "M" + (cx - w0) + "," + y0 + "L" + (cx + w0) + "," + y0 +
+              "L" + (cx + w1) + "," + y1 + "L" + (cx - w1) + "," + y1 + "Z";
+      var band = mk("path", { d: d, fill: cssv(s.color) });
+      band.style.cursor = "crosshair";
+      band.addEventListener("mouseenter", function () {
+        var r = svg.getBoundingClientRect();
+        tooltip(tip, cx / W * r.width, y0 / H * r.height,
+          '<div class="th">' + s.name + "</div>" +
+          '<div class="row"><span>Visitors</span><span>' + fmt(s.v) + "</span></div>" +
+          '<div class="row"><span>Of all sessions</span><span>' + pct(s.v, t.sessions, 2) + "</span></div>" +
+          (i ? '<div class="row"><span>Of previous step</span><span>' + pct(s.v, stages[i - 1].v) + "</span></div>" : ""));
+      });
+      band.addEventListener("mouseleave", function () { tip.style.opacity = "0"; });
+      svg.appendChild(band);
+
+      // stage name to the left, count to the right, outside the shape
+      var ym = y0 + (bandH - 6) / 2;
+      var nameT = mk("text", { x: cx - maxW / 2 - 16, y: ym - 3, "text-anchor": "end",
+        fill: cssv("--ink"), "font-size": 12.5, "font-weight": 600,
+        "font-family": "IBM Plex Sans, sans-serif" });
+      nameT.textContent = s.name;
+      svg.appendChild(nameT);
+      var noteT = mk("text", { x: cx - maxW / 2 - 16, y: ym + 12, "text-anchor": "end",
+        fill: cssv("--muted"), "font-size": 10.5, "font-family": "IBM Plex Mono, monospace" });
+      noteT.textContent = s.note;
+      svg.appendChild(noteT);
+
+      var cnt = mk("text", { x: cx + maxW / 2 + 16, y: ym - 3, "text-anchor": "start",
+        fill: cssv("--ink"), "font-size": 15, "font-weight": 600,
+        "font-family": "Archivo, sans-serif" });
+      cnt.textContent = fmt(s.v);
+      svg.appendChild(cnt);
+
+      if (i > 0) {
+        var lost = stages[i - 1].v - s.v;
+        var leak = mk("text", { x: cx + maxW / 2 + 16, y: ym + 12, "text-anchor": "start",
+          fill: cssv("--critical-ink"), "font-size": 10.5,
+          "font-family": "IBM Plex Mono, monospace" });
+        leak.textContent = "−" + fmt(lost) + " left here";
+        svg.appendChild(leak);
+      }
+    });
+
+    host.appendChild(svg);
+
+    var ratio = t.purchase ? Math.round(t.sessions / t.purchase) : null;
+    document.getElementById("vf-legend").innerHTML =
+      "Width ∝ √visitors. Drawn to a linear scale the last three steps would be thinner than a hairline — " +
+      fmt(t.sessions) + " down to " + fmt(t.purchase || 0) +
+      (ratio ? " is " + fmt(ratio) + "× " : " ") + "— so the shape is square-rooted and every exact number is printed beside it.";
+
+    var steps = document.getElementById("vf-steps");
+    steps.innerHTML = "";
+    stages.forEach(function (s, i) {
+      var box = el("div", "vf-step");
+      box.style.borderLeftColor = cssv(s.color);
+      box.innerHTML =
+        '<div class="lab">' + s.name + "</div>" +
+        '<span class="n">' + fmt(s.v) + "</span>" +
+        '<p class="sub">' + (i === 0
+          ? "the whole selected window"
+          : pct(s.v, stages[i - 1].v) + " of the step above · " + pct(s.v, t.sessions, 2) + " of all sessions") + "</p>";
+      steps.appendChild(box);
+      if (i < 3) {
+        var lost = s.v - stages[i + 1].v;
+        steps.appendChild(el("div", "vf-leak",
+          "↓ " + fmt(lost) + " lost · −" + (s.v ? (lost / s.v * 100).toFixed(1) : "0") + "%"));
+      }
+    });
   }
 
   /* ================= charts ================= */
@@ -1630,17 +2001,23 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
     var host = document.getElementById("daily-chart");
     var tip = document.getElementById("daily-tip");
     host.innerHTML = "";
+    var S = dailySeries();
+    if (!S.length) return;
+
     var W = host.clientWidth || 800, H = 240;
-    var m = { t: 14, r: 10, b: 26, l: 44 };
+    var m = { t: 14, r: 10, b: 26, l: 46 };
     var iw = W - m.l - m.r, ih = H - m.t - m.b;
-    var max = 700;
-    var X = function (i) { return m.l + i * (iw / (DAILY.length - 1)); };
+    var peak = Math.max.apply(null, S.map(function (d) { return d.s; }));
+    var step = Math.pow(10, Math.floor(Math.log(Math.max(peak, 10)) / Math.LN10)) / 2;
+    var max = Math.max(step * 2, Math.ceil(peak / step) * step);
+    var X = function (i) { return S.length === 1 ? m.l + iw / 2 : m.l + i * (iw / (S.length - 1)); };
     var Y = function (v) { return m.t + ih - (v / max) * ih; };
 
     var svg = mk("svg", { viewBox: "0 0 " + W + " " + H, role: "img",
-      "aria-label": "Daily sessions, 25 July to 24 August 2026" });
+      "aria-label": "Sessions per day, " + prettyFull(range.a) + " to " + prettyFull(range.b) });
 
-    [0, 175, 350, 525, 700].forEach(function (v) {
+    [0, 0.25, 0.5, 0.75, 1].forEach(function (f) {
+      var v = Math.round(max * f);
       svg.appendChild(mk("line", { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v),
         stroke: cssv("--hair"), "stroke-width": 1 }));
       var tx = mk("text", { x: m.l - 9, y: Y(v) + 4, "text-anchor": "end",
@@ -1656,36 +2033,30 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
     defs.appendChild(grad); svg.appendChild(defs);
 
     var area = "M" + X(0) + "," + Y(0);
-    DAILY.forEach(function (d, i) { area += "L" + X(i) + "," + Y(d[1]); });
-    area += "L" + X(DAILY.length - 1) + "," + Y(0) + "Z";
+    S.forEach(function (d, i) { area += "L" + X(i) + "," + Y(d.s); });
+    area += "L" + X(S.length - 1) + "," + Y(0) + "Z";
     svg.appendChild(mk("path", { d: area, fill: "url(#ag)" }));
 
     var line = "";
-    DAILY.forEach(function (d, i) { line += (i ? "L" : "M") + X(i) + "," + Y(d[1]); });
+    S.forEach(function (d, i) { line += (i ? "L" : "M") + X(i) + "," + Y(d.s); });
     svg.appendChild(mk("path", { d: line, fill: "none", stroke: cssv("--s1"),
       "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }));
 
-    var pi = isClean() ? 5 : 4;
-    DAILY.forEach(function (d, i) {
-      if (d[pi] > 0) {
-        svg.appendChild(mk("circle", { cx: X(i), cy: Y(d[1]), r: 4.5,
+    S.forEach(function (d, i) {
+      if (d.p > 0) {
+        svg.appendChild(mk("circle", { cx: X(i), cy: Y(d.s), r: 4.5,
           fill: cssv("--f4"), stroke: cssv("--surface"), "stroke-width": 2 }));
       }
     });
 
-    var sx = X(17);
-    svg.appendChild(mk("line", { x1: sx, x2: sx, y1: m.t, y2: m.t + ih,
-      stroke: cssv("--critical"), "stroke-width": 1, "stroke-dasharray": "3 3", opacity: 0.6 }));
-    var an = mk("text", { x: sx - 8, y: m.t + 12, "text-anchor": "end",
-      fill: cssv("--critical-ink"), "font-size": 10.5, "font-family": "IBM Plex Mono, monospace" });
-    an.textContent = "10–11 Aug · 1,074 sessions, 0 orders";
-    svg.appendChild(an);
-
-    [0, 8, 16, 24, 30].forEach(function (i) {
+    var ticks = S.length <= 8 ? S.map(function (_, i) { return i; })
+      : [0, Math.round((S.length - 1) * 0.25), Math.round((S.length - 1) * 0.5),
+         Math.round((S.length - 1) * 0.75), S.length - 1];
+    ticks.forEach(function (i, n) {
       var t = mk("text", { x: X(i), y: H - 6,
-        "text-anchor": i === 0 ? "start" : (i === 30 ? "end" : "middle"),
+        "text-anchor": n === 0 ? "start" : (n === ticks.length - 1 ? "end" : "middle"),
         fill: cssv("--muted"), "font-size": 10.5, "font-family": "IBM Plex Mono, monospace" });
-      t.textContent = DAILY[i][0].slice(5).replace("-", "/");
+      t.textContent = pretty(S[i].i);
       svg.appendChild(t);
     });
 
@@ -1699,18 +2070,19 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
     hit.addEventListener("mousemove", function (e) {
       var r = svg.getBoundingClientRect();
       var px = (e.clientX - r.left) / r.width * W;
-      var i = Math.max(0, Math.min(DAILY.length - 1, Math.round((px - m.l) / (iw / (DAILY.length - 1)))));
-      var d = DAILY[i];
+      var i = S.length === 1 ? 0 : Math.max(0, Math.min(S.length - 1,
+        Math.round((px - m.l) / (iw / (S.length - 1)))));
+      var d = S[i];
       cross.setAttribute("x1", X(i)); cross.setAttribute("x2", X(i)); cross.setAttribute("opacity", 0.45);
-      dot.setAttribute("cx", X(i)); dot.setAttribute("cy", Y(d[1])); dot.setAttribute("opacity", 1);
-      tooltip(tip, X(i) / W * r.width, Y(d[1]) / H * r.height,
-        '<div class="th">' + d[0] + "</div>" +
-        '<div class="row"><span>Sessions</span><span>' + fmt(d[1]) + "</span></div>" +
-        '<div class="row"><span>Cart adds</span><span>' + d[2] + "</span></div>" +
-        '<div class="row"><span>Checkouts</span><span>' + d[3] + "</span></div>" +
-        '<div class="row"><span>Tracked orders</span><span>' + d[pi] + "</span></div>" +
-        (isClean() && d[4] !== d[5]
-          ? '<div class="row" style="color:var(--muted);margin-top:4px"><span>yours, removed</span><span>' + (d[4] - d[5]) + "</span></div>"
+      dot.setAttribute("cx", X(i)); dot.setAttribute("cy", Y(d.s)); dot.setAttribute("opacity", 1);
+      tooltip(tip, X(i) / W * r.width, Y(d.s) / H * r.height,
+        '<div class="th">' + prettyFull(d.i) + "</div>" +
+        '<div class="row"><span>Sessions</span><span>' + fmt(d.s) + "</span></div>" +
+        '<div class="row"><span>Cart adds</span><span>' + d.c + "</span></div>" +
+        '<div class="row"><span>Checkouts</span><span>' + d.k + "</span></div>" +
+        '<div class="row"><span>Tracked orders</span><span>' + d.p + "</span></div>" +
+        (isClean() && d.own
+          ? '<div class="row" style="color:var(--muted);margin-top:4px"><span>yours, removed</span><span>' + d.own + "</span></div>"
           : ""));
     });
     hit.addEventListener("mouseleave", function () {
@@ -1802,14 +2174,21 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
       { name: "Desktop", color: "--s2", values: stepValues(desk), raw: stepRaw(desk) }
     ]);
 
+    var mobCart = pct(mob.cart, mob.sessions, 2), deskCart = pct(desk.cart, desk.sessions, 2);
     document.getElementById("dev-callout").innerHTML = isClean()
-      ? '<span class="ico">●</span><div><h3>Outside Bratislava, desktop is a flat zero</h3>' +
-        '<p>473 desktop sessions in 30 days, <strong>no cart adds, no checkouts, no orders</strong>. Every desktop event in the store came from your own machine. ' +
-        'The real store is a mobile store: 2,127 mobile sessions carry all 35 cart adds and all 4 tracked orders.</p>' +
-        '<p>That also means the desktop traffic itself is suspect — 383 of those sessions are "direct" desktop visits that touch nothing. That is the shape of bot traffic, not of shoppers.</p></div>'
-      : '<span class="ico">●</span><div><h3>This is the number that was wrong</h3>' +
-        '<p>Raw, desktop looks like it converts 3.1× better than mobile (0.72% vs 0.23%) on a quarter of the traffic. It does not. ' +
-        'Switch to the cleaned view: every one of those 23 desktop cart adds came from Bratislava — from you.</p></div>';
+      ? '<span class="ico">' + (desk.cart === 0 ? "\u25cf" : "\u25b2") + '</span><div>' +
+        '<h3>' + (desk.cart === 0
+          ? "Outside Bratislava, desktop is a flat zero"
+          : "Mobile carries this store") + '</h3>' +
+        '<p>' + fmt(desk.sessions) + ' desktop sessions in this window produced <strong>' +
+        (desk.cart === 0 ? 'no cart adds, no checkouts and no orders' :
+          desk.cart + ' cart adds and ' + desk.purchase + ' orders') + '</strong>, while ' +
+        fmt(mob.sessions) + ' mobile sessions carry ' + mob.cart + ' cart adds and ' +
+        mob.purchase + ' tracked orders. Every desktop event the store ever recorded came from your own machine.</p>' +
+        '<p>That also makes the desktop traffic itself suspect: direct desktop visits that touch nothing are the shape of bot traffic, not shoppers.</p></div>'
+      : '<span class="ico">\u25cf</span><div><h3>This is the number that was wrong</h3>' +
+        '<p>Raw, desktop looks like it converts far better than mobile — ' + deskCart + ' of desktop sessions add to cart against ' + mobCart +
+        ' on mobile. It does not. Switch to the cleaned view: every one of those desktop cart adds came from Bratislava, from you.</p></div>';
   }
 
   function drawEntry() {
@@ -1976,18 +2355,17 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
     host.innerHTML =
       '<div class="callout crit"><span class="ico">1</span><div>' +
         '<h3>Session → cart: −' + (d1 / t.sessions * 100).toFixed(1) + '%</h3>' +
-        '<p>' + fmt(d1) + ' of ' + fmt(t.sessions) + ' sessions never add anything. This is the whole problem in one number, and most of it is traffic quality: the <code>bg_ref</code> burst, the spam referrers, and 473 desktop sessions that touch nothing. Fix what you are buying before you touch the page.</p>' +
+        '<p>' + fmt(d1) + ' of ' + fmt(t.sessions) + ' sessions never add anything. This is the whole problem in one number, and most of it is traffic quality: the <code>bg_ref</code> burst, the spam referrers, and desktop traffic that touches nothing at all. Fix what you are buying before you touch the page.</p>' +
       '</div></div>' +
       '<div class="callout warn"><span class="ico">2</span><div>' +
         '<h3>Cart → checkout: −' + (t.cart ? (d2 / t.cart * 100).toFixed(1) : 0) + '%</h3>' +
         '<p>' + d2 + ' of ' + t.cart + ' carts never reach checkout. At this volume that is a handful of people, and ' + pct(t.checkout, t.cart) + ' cart-to-checkout is normal. This step is not where the money is.</p>' +
       '</div></div>' +
       '<div class="callout warn"><span class="ico">3</span><div>' +
-        '<h3>Checkout → order: −' + (t.checkout ? (d3 / t.checkout * 100).toFixed(1) : 0) + '%' +
-        (isClean() ? ' — but really −69%' : '') + '</h3>' +
+        '<h3>Checkout → order: −' + (t.checkout ? (d3 / t.checkout * 100).toFixed(1) : 0) + '%</h3>' +
         '<p>' + d3 + ' of ' + t.checkout + ' people open checkout and leave. ' +
         (isClean()
-          ? '<strong>Eight of those were from countries you do not ship to</strong> — the UK four times, plus Canada, Mexico, the UAE and Israel. They could not have finished. Among people you can serve, 4 of 13 do finish — a 31% completion rate: a normal problem, not an emergency.'
+          ? 'A large share of them were never able to finish: over 25 Jul – 24 Aug, eight of 21 checkouts came from countries you do not ship to — the UK four times, plus Canada, Mexico, the UAE and Israel. Among people you can actually serve that window, 4 of 13 finished — a 31% completion rate, which is a normal problem rather than an emergency.'
           : 'Switch to the cleaned view — much of this is your own testing and traffic from countries the store does not sell to.') +
         '</p>' +
       '</div></div>' +
@@ -2000,10 +2378,13 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
   /* ================= render ================= */
 
   function render() {
+    paintRangeLabels();
     paintKpis();
     srcTable.repaint();
     landTable.repaint();
-    drawDaily(); drawDevice(); drawEntry(); drawShip(); drawFunnel(); drawDrops();
+    if (countryTable) countryTable.repaint();
+    drawDaily(); drawDevice(); drawEntry(); drawShip();
+    drawVFunnel(); drawFunnel(); drawDrops();
     drawClicks(); drawScroll();
   }
 
