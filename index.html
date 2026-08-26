@@ -430,6 +430,7 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
             <button class="opt" data-preset="30" aria-pressed="true">Last 30 days</button>
             <button class="opt" data-preset="60">Last 60 days</button>
             <button class="opt" data-preset="all">All data</button>
+            <button class="opt" data-preset="ledger">Ledger window</button>
           </div>
           <div class="cal-nav">
             <button id="cal-prev" aria-label="Previous month">‹</button>
@@ -1378,7 +1379,7 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
     document.getElementById("k-chk-n").textContent = pct(t.checkout, t.cart) + " of carts";
     document.getElementById("k-trk").textContent = t.purchase;
     document.getElementById("k-trk-n").innerHTML = "<b>" + pct(t.purchase, t.checkout) + "</b> of checkouts";
-    var defaultWindow = (range.a === 40 && range.b === 70);
+    var defaultWindow = (dayISO(range.a) === LEDGER_A && dayISO(range.b) === LEDGER_B);
     document.getElementById("k-ord").textContent = defaultWindow ? (isClean() ? "9" : "24") : "—";
     document.getElementById("k-ord-n").innerHTML = defaultWindow
       ? (isClean() ? '€544 · AOV <b class="up">€60.46</b>' : '€775 · AOV <b>€26.26</b>')
@@ -1396,8 +1397,14 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
   var pretty = function (i) { var d = dayDate(i); return d.getUTCDate() + " " + MON[d.getUTCMonth()]; };
   var prettyFull = function (i) { var d = dayDate(i); return d.getUTCDate() + " " + MON[d.getUTCMonth()] + " " + d.getUTCFullYear(); };
 
-  // default: 25 Jul – 24 Aug 2026, the window the fixed-window tables describe
-  var range = { a: 40, b: 70 };
+  // the window the fixed-window tables (order ledger, per-order attribution) describe
+  var LEDGER_A = "2026-07-25", LEDGER_B = "2026-08-24";
+  // default view: the trailing 31 days of whatever data is loaded
+  var range = { a: Math.max(0, DAYN - 31), b: DAYN - 1 };
+  function clampRange() {
+    range.b = Math.min(Math.max(range.b, 0), DAYN - 1);
+    range.a = Math.min(Math.max(range.a, 0), range.b);
+  }
 
   function agg(srcF, devF, forceView) {
     var t = { sessions: 0, cart: 0, checkout: 0, purchase: 0 };
@@ -1825,6 +1832,15 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
       b.addEventListener("click", function () {
         var p = b.dataset.preset;
         if (p === "all") { range.a = 0; range.b = DAYN - 1; }
+        else if (p === "ledger") {
+          var la = -1, lb = -1;
+          for (var i = 0; i < DAYN; i++) {
+            if (dayISO(i) === LEDGER_A) la = i;
+            if (dayISO(i) === LEDGER_B) lb = i;
+          }
+          if (la < 0 || lb < 0) return;   // window has rolled past it
+          range.a = la; range.b = lb;
+        }
         else { range.b = DAYN - 1; range.a = Math.max(0, DAYN - parseInt(p, 10)); }
         setPreset(p);
         picking = null;
@@ -1832,6 +1848,15 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
         render();
       });
     });
+
+    (function () {
+      var have = false;
+      for (var i = 0; i < DAYN; i++) if (dayISO(i) === LEDGER_A) have = true;
+      if (!have) {
+        var lb = cal.querySelector('[data-preset="ledger"]');
+        if (lb) lb.style.display = "none";
+      }
+    })();
 
     window.__calDraw = draw;
   })();
@@ -2422,6 +2447,7 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
   /* ================= render ================= */
 
   function render() {
+    clampRange();
     paintRangeLabels();
     paintKpis();
     srcTable.repaint();
