@@ -547,12 +547,12 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
         <span class="note" id="k-chk-n">60% of carts</span>
       </div>
       <div class="tile">
-        <span class="lab">Tracked orders</span>
+        <span class="lab">Tracked purchases</span>
         <div class="val" id="k-trk">4</div>
         <span class="note" id="k-trk-n"><b>19%</b> of checkouts</span>
       </div>
       <div class="tile">
-        <span class="lab">Real orders</span>
+        <span class="lab">Actual orders</span>
         <div class="val" id="k-ord">9</div>
         <span class="note" id="k-ord-n">€544 · AOV <b class="up">€60.46</b></span>
       </div>
@@ -1395,6 +1395,8 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
   var LPDP={"23":[3,2,0,0],"49":[1,0,0,0],"51":[5,2,1,0],"52":[6,1,1,0],"53":[8,0,0,0],"54":[21,0,0,0],"55":[3,0,0,0],"56":[262,2,2,0],"57":[209,6,1,0],"58":[79,1,0,0],"59":[45,2,2,0],"60":[48,1,1,0],"61":[23,0,0,0],"62":[41,0,0,0],"63":[84,0,0,0],"64":[33,1,0,0],"65":[66,0,0,0],"66":[145,5,3,0],"67":[79,1,0,1],"68":[52,0,0,0],"69":[60,0,0,0],"70":[125,2,1,0],"71":[43,2,1,0],"72":[33,1,1,0],"73":[31,0,0,0],"74":[34,2,2,0],"75":[36,0,0,0],"76":[30,0,0,0],"77":[13,0,0,0]};
   var LHOME={"28":[9,0,0,0],"29":[24,0,0,0],"31":[3,0,0,0],"34":[3,0,0,0],"35":[3,0,0,0],"36":[4,0,0,0],"38":[3,0,0,0],"39":[6,0,0,0],"40":[6,0,0,0],"41":[6,0,0,0],"42":[4,0,0,0],"43":[3,0,0,0],"44":[1,0,0,0],"45":[7,1,1,0],"46":[3,0,0,0],"48":[9,0,0,0],"49":[20,0,0,0],"50":[16,2,1,1],"51":[22,4,4,0],"52":[41,6,2,1],"53":[33,2,2,0],"54":[12,1,1,1],"55":[14,0,0,0],"56":[142,1,1,0],"57":[415,4,1,0],"58":[18,2,1,0],"59":[24,0,0,0],"60":[17,2,2,2],"61":[9,0,0,0],"62":[9,0,0,0],"63":[27,1,1,1],"64":[36,2,2,0],"65":[49,0,0,0],"66":[88,0,0,0],"67":[73,3,2,1],"68":[15,2,2,1],"69":[9,1,1,0],"70":[54,4,3,0],"71":[23,1,1,0],"72":[21,1,1,1],"73":[12,0,0,0],"74":[11,0,0,0],"75":[11,0,0,0],"76":[9,0,0,0],"77":[8,1,1,0]};
   var GA4D={0:[78,32,1460],1:[34,19,653],2:[35,28,1063],3:[62,28,2248],4:[26,23,780],5:[34,22,1418],6:[43,29,1003],7:[69,41,1120],8:[40,29,1021],9:[27,21,519],10:[55,24,4893],11:[39,24,799],12:[31,14,1556],13:[41,25,1097],14:[44,21,941],15:[13,11,157],16:[46,31,1136],17:[44,32,797],18:[36,23,654],19:[27,18,464],20:[29,15,1306],21:[46,33,381],22:[10,9,200],23:[34,14,880],24:[38,18,535],25:[41,20,763],26:[12,6,288],27:[14,8,791],28:[14,11,242],29:[66,41,1118],30:[56,36,1355],31:[13,8,310],32:[41,23,911],33:[98,71,1801],34:[85,61,2253],35:[60,52,873],36:[19,16,199],37:[36,26,1147],38:[42,26,594],39:[42,31,1136],40:[78,59,1064],41:[80,58,1902],42:[18,10,1089],43:[39,19,1275],44:[80,27,2262],45:[56,26,2409],46:[36,23,509],47:[15,12,297],48:[28,9,1277],49:[102,21,2711],50:[108,26,2615],51:[75,33,644],52:[62,28,909],53:[52,34,709],54:[36,28,461],55:[30,23,380],56:[476,381,7595],57:[755,595,11941],58:[180,123,3692],59:[86,67,1164],60:[98,59,1465],61:[39,34,509],62:[35,31,401],63:[191,107,2953],64:[92,64,1259],65:[117,92,1693],66:[306,228,7643],67:[192,141,3340],68:[91,64,1924],69:[87,67,1717],70:[223,163,5788],71:[236,159,6476],72:[77,52,1133],73:[43,35,927],74:[57,41,1188],75:[41,32,758],76:[38,28,1265],77:[54,41,596]};
+  var ORDD={52:[1,6990],54:[1,6291],63:[1,10782],64:[1,4950],66:[2,11031],67:[2,10332],68:[1,4041],71:[2,17644],72:[1,4490],76:[1,4490],77:[1,6291]};
+  var ORDT={45:1,46:2,49:3,50:4,60:2,68:1};
 
   // path, raw funnel, cleaned funnel
   var LANDING = [
@@ -1542,11 +1544,14 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
     document.getElementById("k-chk-n").textContent = pct(t.checkout, t.cart) + " of carts";
     document.getElementById("k-trk").textContent = t.purchase;
     document.getElementById("k-trk-n").innerHTML = "<b>" + pct(t.purchase, t.checkout) + "</b> of checkouts";
-    var defaultWindow = (dayISO(range.a) === LEDGER_A && dayISO(range.b) === LEDGER_B);
-    document.getElementById("k-ord").textContent = defaultWindow ? (isClean() ? "9" : "24") : "—";
-    document.getElementById("k-ord-n").innerHTML = defaultWindow
-      ? (isClean() ? '€544 · AOV <b class="up">€60.46</b>' : '€775 · AOV <b>€26.26</b>')
-      : '<span style="color:var(--muted)">hand-checked for 25 Jul – 24 Aug · pick that range</span>';
+    var o = ordAgg();
+    var shown = isClean() ? o.n : o.n + o.tests;
+    document.getElementById("k-ord").textContent = fmt(shown);
+    document.getElementById("k-ord-n").innerHTML = shown
+      ? (isClean()
+          ? eur(o.cents) + ' · AOV <b class="up">' + eur(Math.round(o.cents / o.n)) + "</b>"
+          : eur(o.cents) + " · incl. " + o.tests + " of your tests")
+      : '<span style="color:var(--muted)">no orders in these dates</span>';
   }
 
   /* ================= aggregation ================= */
@@ -2621,6 +2626,18 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
     }
     return t;
   }
+  function ordAgg() {
+    var t = { n: 0, cents: 0, tests: 0 };
+    for (var i = range.a; i <= range.b; i++) {
+      var v = ORDD[i];
+      if (v) { t.n += v[0]; t.cents += v[1]; }
+      if (ORDT[i]) t.tests += ORDT[i];
+    }
+    return t;
+  }
+  function eur(cents) {
+    return "\u20ac" + (cents / 100).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  }
   function secsPretty(s) {
     s = Math.round(s);
     return s >= 60 ? Math.floor(s / 60) + "m " + (s % 60) + "s" : s + "s";
@@ -2656,7 +2673,12 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
         ", <strong>" + fmt(t.sessions) + " sessions</strong> produced <strong>" + fmt(t.cart) + "</strong> cart " +
         (t.cart === 1 ? "add" : "adds") + ", <strong>" + fmt(t.checkout) + "</strong> " +
         (t.checkout === 1 ? "checkout" : "checkouts") + " and <strong>" + fmt(t.purchase) + "</strong> " +
-        (t.purchase === 1 ? "order" : "orders") + " — " + pct(t.purchase, t.sessions, 2) + " of visits ending in a sale. " +
+        (t.purchase === 1 ? "tracked purchase" : "tracked purchases") + ". " +
+        "Shopify's order records show <strong>" + fmt(ordAgg().n) + " actual " +
+        (ordAgg().n === 1 ? "order" : "orders") + "</strong> in the same dates" +
+        (ordAgg().n > t.purchase
+          ? " \u2014 session tracking sees only " + pct(t.purchase, ordAgg().n, 0) + " of them. "
+          : ". ") +
         "The traffic exists; the product page is where it stops. Only <strong>" + pct(t.cart, t.sessions, 1) +
         "</strong> of visitors put anything in the cart at all.";
       var p2 = "";
@@ -2688,7 +2710,13 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
     flow += sfArrow(t.cart, t.checkout);
     flow += sfStep("Reached checkout", fmt(t.checkout), pct(t.checkout, t.sessions, 1) + " of sessions");
     flow += sfArrow(t.checkout, t.purchase);
-    flow += sfStep("Paid", fmt(t.purchase), pct(t.purchase, t.sessions, 2) + " of sessions");
+    flow += sfStep("Tracked purchases", fmt(t.purchase), pct(t.purchase, t.sessions, 2) + " of sessions");
+    var o = ordAgg();
+    flow += '<div class="sf-arrow"><span class="pctdrop" style="color:var(--good-ink)">' +
+      (o.n ? "+" + fmt(o.n - t.purchase) : "&#8776;") +
+      '</span><span class="glyph">&#8594;</span><span class="kept">untracked</span></div>';
+    flow += sfStep("Actual orders", fmt(o.n),
+      o.n ? eur(o.cents) + " \u00b7 AOV " + eur(Math.round(o.cents / o.n)) : "none in these dates");
     document.getElementById("sumflow").innerHTML = flow;
 
     /* ---------- GA4 tiles ---------- */
@@ -2766,13 +2794,13 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
     /* ---------- where we lose them ---------- */
     var losses = [
       { from: t.sessions, to: t.cart, h: "They look at the product and leave without adding it",
-        p: "The single biggest leak by a wide margin. Clarity backs it up: 1.24 pages a visit, 37 seconds of active time, and only 19% of people scroll halfway down the product page. Most visitors never see the price, the ingredients or the reviews.",
+        p: "The single biggest leak by a wide margin, and the one worth attacking first. GA4 agrees: barely more than one page a session and well under a minute of engaged time. Clarity's 24 August read adds that only 19% scroll halfway down the product page \u2014 most visitors never reach the price, the ingredients or the reviews.",
         who: "of the visitors who arrived" },
       { from: t.cart, to: t.checkout, h: "They add to the cart and never open checkout",
         p: "A short step that should hold almost everyone. Losses here are usually the cart drawer, unexpected shipping cost, or a second thought on price.",
         who: "of the people who added to cart" },
-      { from: t.checkout, to: t.purchase, h: "They open checkout and do not pay",
-        p: "Payment, shipping options and address validation live here. Some of this loss is structural — visitors from countries with no market can start a checkout but can never finish it.",
+      { from: t.checkout, to: t.purchase, h: "Checkout opens, but no tracked purchase follows",
+        p: "Read this one carefully: it mixes a real loss with a measurement gap. Some visitors genuinely abandon payment, and some countries can never complete an order at all \u2014 but many who do buy are never credited here, because the session lost analytics consent before the purchase. Compare it against Actual orders above.",
         who: "of the people who reached checkout" }
     ].filter(function (l) { return l.from > 0; })
      .map(function (l) { l.lost = l.from - l.to; return l; })
@@ -2806,6 +2834,9 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
         s: ["GA4", "Clarity"] },
       { h: "A large slice of traffic could never have bought",
         p: geoTot ? pct(sp.no.sessions, geoTot, 0) + " of sessions come from countries outside your Czechia / EU / US markets. This is the main reason raw conversion looks low." : "Country data is thin in this window.",
+        s: ["Shopify"] },
+      { h: "Session tracking undercounts your sales badly",
+        p: "In August Shopify recorded 24 orders \u2014 14 real customers and 10 of your own tests \u2014 while session analytics credited only a handful. Orders arrive whose visit was never tracked, because Shopify opens a session only once analytics consent is given. Judge revenue by Actual orders, never by the funnel's last step.",
         s: ["Shopify"] },
       { h: "Email is worth more than the session data says",
         p: "Two orders totalling €119.40 carry utm_source=brevo in their cart attributes, from Automation 24 steps 2 and 5 — making email the second-biggest revenue channel. The session tables show email as a handful of sessions and zero orders, because the attribution is lost before the order is written.",
