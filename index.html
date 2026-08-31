@@ -492,7 +492,7 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
     <div class="mast-meta">
       <span class="chip" id="chip-range">25 Jul – 24 Aug 2026 · 30 days</span>
       <span class="chip"><span class="dot ok"></span>Shopify Analytics · live</span>
-      <span class="chip"><span class="dot ok"></span>GA4 · read 24 Aug</span>
+      <span class="chip"><span class="dot ok"></span>GA4 · live</span>
       <span class="chip"><span class="dot ok"></span>Clarity · read 24 Aug</span>
     </div>
 
@@ -603,19 +603,20 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
     </section>
 
     <section>
-      <h2>How long they stay<span class="winbadge">GA4 + Clarity · snapshot 24 Aug</span></h2>
-      <p class="sub">These four cannot follow the date picker — they are read by hand from GA4 and Clarity, which have no automated connection yet. See the note at the bottom of this tab.</p>
+      <h2>How long they stay<span class="winbadge">GA4 live · Clarity hand-read</span></h2>
+      <p class="sub">The first three come straight from GA4 and move with the date picker. Scroll depth is the one exception — Clarity has no usable API, so it stays a hand-read snapshot from 24 August and is marked as such.</p>
       <div class="tiles" style="margin-top:0">
-        <div class="tile"><span class="lab">Page views</span><div class="val">3,482</div><span class="note">GA4 · 2,061 users</span></div>
-        <div class="tile"><span class="lab">Pages per visit</span><div class="val">1.24</div><span class="note">they land and leave</span></div>
-        <div class="tile"><span class="lab">Active time</span><div class="val">37s</div><span class="note">25s on the product page</span></div>
-        <div class="tile"><span class="lab">Scroll depth</span><div class="val">30.6%</div><span class="note">average, all pages</span></div>
+        <div class="tile"><span class="lab">Page views</span><div class="val" id="g-pv">—</div><span class="note" id="g-pv-n">GA4</span></div>
+        <div class="tile"><span class="lab">Pages per session</span><div class="val" id="g-pps">—</div><span class="note" id="g-pps-n">GA4</span></div>
+        <div class="tile"><span class="lab">Engaged time</span><div class="val" id="g-eng">—</div><span class="note" id="g-eng-n">per session, GA4</span></div>
+        <div class="tile"><span class="lab">Scroll depth</span><div class="val">30.6%</div><span class="note"><span class="tag warn">Clarity · 24 Aug</span></span></div>
       </div>
       <div class="callout warn" style="margin-top:16px">
         <span class="ico">▲</span>
         <div>
           <h3>Nobody explores, and nobody reads far</h3>
-          <p>1.24 pages a visit means there is effectively no browsing — people arrive on one page, give it about half a minute, and leave. On the product page only <strong>48% get past the first quarter</strong> and <strong>19% reach halfway</strong>. The one page that holds attention is <code>/pages/science</code> at 53 seconds, more than double the product page.</p>
+          <p id="g-callout"></p>
+          <p style="margin-top:8px">On the product page only <strong>48% get past the first quarter</strong> and <strong>19% reach halfway</strong>; the one page that holds attention is <code>/pages/science</code> at 53 seconds, more than double the product page. <span class="tag warn">Clarity · 24 Aug</span></p>
         </div>
       </div>
     </section>
@@ -640,10 +641,10 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
           <tbody>
             <tr><td><strong>Shopify</strong></td><td><span class="tag ok">Daily, automatic</span></td>
                 <td>Sessions, carts, checkouts, orders, sources, countries, the funnel — everything that moves with the date picker.</td></tr>
-            <tr><td><strong>GA4</strong></td><td><span class="tag warn">Manual</span></td>
-                <td>Page views, engagement time, the purchase journey. Needs a Google account connected in Zapier once, then it can join the daily run.</td></tr>
+            <tr><td><strong>GA4</strong></td><td><span class="tag ok">Daily, automatic</span></td>
+                <td>Page views, GA4 sessions and engaged time, connected 31 Aug. Moves with the date picker like the Shopify figures.</td></tr>
             <tr><td><strong>Clarity</strong></td><td><span class="tag warn">Manual</span></td>
-                <td>Scroll depth, dead clicks, the click map, bot exclusion. Its export API gives aggregates only — heatmaps and recordings are always UI-only.</td></tr>
+                <td>Scroll depth, dead clicks, the click map. Zapier exposes no usable Clarity actions and its export API is unreachable from here, so these stay hand-read. Heatmaps and recordings are never available by API from anyone.</td></tr>
           </tbody>
         </table>
       </div>
@@ -1393,6 +1394,7 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
   // Landing-page day series, keyed by day index. Raw basis — see the note on that chart.
   var LPDP={"23":[3,2,0,0],"49":[1,0,0,0],"51":[5,2,1,0],"52":[6,1,1,0],"53":[8,0,0,0],"54":[21,0,0,0],"55":[3,0,0,0],"56":[262,2,2,0],"57":[209,6,1,0],"58":[79,1,0,0],"59":[45,2,2,0],"60":[48,1,1,0],"61":[23,0,0,0],"62":[41,0,0,0],"63":[84,0,0,0],"64":[33,1,0,0],"65":[66,0,0,0],"66":[145,5,3,0],"67":[79,1,0,1],"68":[52,0,0,0],"69":[60,0,0,0],"70":[125,2,1,0],"71":[43,2,1,0],"72":[33,1,1,0],"73":[31,0,0,0],"74":[34,2,2,0],"75":[36,0,0,0],"76":[30,0,0,0],"77":[13,0,0,0]};
   var LHOME={"28":[9,0,0,0],"29":[24,0,0,0],"31":[3,0,0,0],"34":[3,0,0,0],"35":[3,0,0,0],"36":[4,0,0,0],"38":[3,0,0,0],"39":[6,0,0,0],"40":[6,0,0,0],"41":[6,0,0,0],"42":[4,0,0,0],"43":[3,0,0,0],"44":[1,0,0,0],"45":[7,1,1,0],"46":[3,0,0,0],"48":[9,0,0,0],"49":[20,0,0,0],"50":[16,2,1,1],"51":[22,4,4,0],"52":[41,6,2,1],"53":[33,2,2,0],"54":[12,1,1,1],"55":[14,0,0,0],"56":[142,1,1,0],"57":[415,4,1,0],"58":[18,2,1,0],"59":[24,0,0,0],"60":[17,2,2,2],"61":[9,0,0,0],"62":[9,0,0,0],"63":[27,1,1,1],"64":[36,2,2,0],"65":[49,0,0,0],"66":[88,0,0,0],"67":[73,3,2,1],"68":[15,2,2,1],"69":[9,1,1,0],"70":[54,4,3,0],"71":[23,1,1,0],"72":[21,1,1,1],"73":[12,0,0,0],"74":[11,0,0,0],"75":[11,0,0,0],"76":[9,0,0,0],"77":[8,1,1,0]};
+  var GA4D={0:[78,32,1460],1:[34,19,653],2:[35,28,1063],3:[62,28,2248],4:[26,23,780],5:[34,22,1418],6:[43,29,1003],7:[69,41,1120],8:[40,29,1021],9:[27,21,519],10:[55,24,4893],11:[39,24,799],12:[31,14,1556],13:[41,25,1097],14:[44,21,941],15:[13,11,157],16:[46,31,1136],17:[44,32,797],18:[36,23,654],19:[27,18,464],20:[29,15,1306],21:[46,33,381],22:[10,9,200],23:[34,14,880],24:[38,18,535],25:[41,20,763],26:[12,6,288],27:[14,8,791],28:[14,11,242],29:[66,41,1118],30:[56,36,1355],31:[13,8,310],32:[41,23,911],33:[98,71,1801],34:[85,61,2253],35:[60,52,873],36:[19,16,199],37:[36,26,1147],38:[42,26,594],39:[42,31,1136],40:[78,59,1064],41:[80,58,1902],42:[18,10,1089],43:[39,19,1275],44:[80,27,2262],45:[56,26,2409],46:[36,23,509],47:[15,12,297],48:[28,9,1277],49:[102,21,2711],50:[108,26,2615],51:[75,33,644],52:[62,28,909],53:[52,34,709],54:[36,28,461],55:[30,23,380],56:[476,381,7595],57:[755,595,11941],58:[180,123,3692],59:[86,67,1164],60:[98,59,1465],61:[39,34,509],62:[35,31,401],63:[191,107,2953],64:[92,64,1259],65:[117,92,1693],66:[306,228,7643],67:[192,141,3340],68:[91,64,1924],69:[87,67,1717],70:[223,163,5788],71:[236,159,6476],72:[77,52,1133],73:[43,35,927],74:[57,41,1188],75:[41,32,758],76:[38,28,1265],77:[54,41,596]};
 
   // path, raw funnel, cleaned funnel
   var LANDING = [
@@ -2610,7 +2612,19 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
 
   /* ================= summary tab ================= */
 
-  var GA4_PV = 3482, GA4_USERS = 2061;
+  function ga4Agg() {
+    var t = { pv: 0, ses: 0, secs: 0 };
+    for (var i = range.a; i <= range.b; i++) {
+      var v = GA4D[i];
+      if (!v) continue;
+      t.pv += v[0]; t.ses += v[1]; t.secs += v[2];
+    }
+    return t;
+  }
+  function secsPretty(s) {
+    s = Math.round(s);
+    return s >= 60 ? Math.floor(s / 60) + "m " + (s % 60) + "s" : s + "s";
+  }
 
   function sfStep(lab, val, sub, badge) {
     return '<div class="sf-step"><span class="lab">' + lab + (badge ? ' <span class="tag warn">' + badge + '</span>' : '') +
@@ -2661,14 +2675,13 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
     }
 
     /* ---------- one-line funnel ---------- */
-    var pv = ledger ? GA4_PV : null;
+    var g = ga4Agg();
     var flow = "";
-    flow += sfStep("Page views", fmt(GA4_PV),
-      ledger ? fmt(GA4_USERS) + " users, GA4" : "GA4, fixed 25 Jul \u2013 24 Aug", "GA4");
+    flow += sfStep("Page views", g.pv ? fmt(g.pv) : "\u2014",
+      g.ses ? fmt(g.ses) + " GA4 sessions" : "GA4 has no data here", "GA4");
     flow += '<div class="sf-arrow"><span class="pctdrop" style="color:var(--muted)">' +
-      (ledger && t.sessions ? (GA4_PV / t.sessions).toFixed(2) + "&#215;" : "&#8776;") +
-      '</span><span class="glyph">&#8594;</span><span class="kept">' +
-      (ledger ? "views per visit" : "other window") + "</span></div>";
+      (g.pv && t.sessions ? (g.pv / t.sessions).toFixed(2) + "&#215;" : "&#8776;") +
+      '</span><span class="glyph">&#8594;</span><span class="kept">views per visit</span></div>';
     flow += sfStep("Sessions", fmt(t.sessions), "Shopify, " + days + " days");
     flow += sfArrow(t.sessions, t.cart);
     flow += sfStep("Added to cart", fmt(t.cart), pct(t.cart, t.sessions, 1) + " of sessions");
@@ -2677,6 +2690,21 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
     flow += sfArrow(t.checkout, t.purchase);
     flow += sfStep("Paid", fmt(t.purchase), pct(t.purchase, t.sessions, 2) + " of sessions");
     document.getElementById("sumflow").innerHTML = flow;
+
+    /* ---------- GA4 tiles ---------- */
+    document.getElementById("g-pv").textContent  = g.pv ? fmt(g.pv) : "\u2014";
+    document.getElementById("g-pv-n").textContent = g.ses ? fmt(g.ses) + " GA4 sessions" : "GA4";
+    document.getElementById("g-pps").textContent = g.ses ? (g.pv / g.ses).toFixed(2) : "\u2014";
+    document.getElementById("g-pps-n").textContent = g.ses
+      ? (g.pv / g.ses < 1.5 ? "they land and leave" : "some browsing") : "GA4";
+    document.getElementById("g-eng").textContent = g.ses ? secsPretty(g.secs / g.ses) : "\u2014";
+    document.getElementById("g-eng-n").textContent = "per session, GA4";
+
+    document.getElementById("g-callout").innerHTML = g.ses
+      ? "<strong>" + (g.pv / g.ses).toFixed(2) + " pages a session</strong> means there is effectively no browsing \u2014 " +
+        "people arrive on one page, give it about " + secsPretty(g.secs / g.ses) +
+        ", and leave. Most never see the price, the ingredients or the reviews."
+      : "GA4 has no data for these dates.";
 
     /* ---------- by source ---------- */
     var sb = document.querySelector("#sum-src tbody");
@@ -2772,7 +2800,9 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
         p: "Clarity's click map puts Accept at 303 taps — 15% of all clicks on the page — and Decline at 100. Shopify only starts a tracked session once analytics consent is granted, which is why orders keep arriving with no visit trail attached to them.",
         s: ["Clarity", "Shopify"] },
       { h: "Nobody browses",
-        p: "1.24 pages per visit and 37 seconds of active time. People arrive on one page, give it half a minute and go. Only /pages/science holds them longer, at 53 seconds.",
+        p: (g.ses ? (g.pv / g.ses).toFixed(2) + " pages per session and " + secsPretty(g.secs / g.ses) + " of engaged time. " : "") +
+           "People arrive on one page, give it well under a minute and go. Only /pages/science holds them longer, at 53 seconds. " +
+           "This has held in every window since June.",
         s: ["GA4", "Clarity"] },
       { h: "A large slice of traffic could never have bought",
         p: geoTot ? pct(sp.no.sessions, geoTot, 0) + " of sessions come from countries outside your Czechia / EU / US markets. This is the main reason raw conversion looks low." : "Country data is thin in this window.",
